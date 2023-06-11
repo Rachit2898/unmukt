@@ -1,0 +1,22 @@
+# Dependency directories
+
+node_modules/
+ios/Pods/
+android/.gradle/
+android/app/build/
+android/build/
+
+# React Native specific files
+
+ios/Podfile.lock
+ios/Pods/
+ios/_.xcworkspace/
+ios/_.xcodeproj/
+android/local.properties
+android/\*.iml
+android/.idea/
+
+# Build files
+
+android/app/build/
+ios/build/
