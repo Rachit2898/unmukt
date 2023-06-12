@@ -1,228 +1,255 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Image,FlatList, Linking, Alert } from 'react-native'
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import { Stack, TextInput, IconButton, Button, Icon } from "@react-native-material/core";
-import SwitchSelector from "react-native-switch-selector";
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  Linking,
+  Alert,
+} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {
+  Stack,
+  TextInput,
+  IconButton,
+  Button,
+  Icon,
+} from '@react-native-material/core';
+import SwitchSelector from 'react-native-switch-selector';
 // import SvgUri from 'react-native-svg-uri';
-import MapPin from '../assets/MapPin.svg'
+import MapPin from '../assets/MapPin.svg';
 import DocumentPicker from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker';
-import { useDispatch, useSelector, Provider } from "react-redux";
+import {useDispatch, useSelector, Provider} from 'react-redux';
 import geolib, {getAreaOfPolygon} from 'geolib';
-import { Picker } from '@react-native-picker/picker';
-import { Axios } from '../core/axios';
+import {Picker} from '@react-native-picker/picker';
+import {Axios} from '../core/axios';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MapView, { Marker, Polygon } from 'react-native-maps';
+import MapView, {Marker, Polygon} from 'react-native-maps';
 import axios from 'axios';
 import HarvestingSub from './CommanCompo/HarvestingSub';
 import RawMaterialSub from './CommanCompo/RawMaterialSub';
-import { checkAuth } from '../Helper';
+import {checkAuth} from '../Helper';
 
-export default function AddFarmerLand({navigation , route}) {
-    const {fetchFarmerLands, farmerId, isViewMode = false, landDetails,farmerName,redirect=false} = route.params;
-// console.log(landDetails)
-    const [showPopup, setShowPopup] = useState(false);
-    const [farmDetailsAdded,setfarmDetailsAdded]=useState(false)
-    const [isEditable, setIsEditable] = useState(!isViewMode);
+export default function AddFarmerLand({navigation, route}) {
+  const {
+    fetchFarmerLands,
+    farmerId,
+    isViewMode = false,
+    landDetails,
+    farmerName,
+    redirect = false,
+  } = route.params;
+  // console.log(landDetails)
+  const [showPopup, setShowPopup] = useState(false);
+  const [farmDetailsAdded, setfarmDetailsAdded] = useState(false);
+  const [isEditable, setIsEditable] = useState(!isViewMode);
 
-    const [shouldShowShowing, setShouldShowShowing] = useState(true);
-    const [collectionCycle, setCollectionCycle] = useState("");
+  const [shouldShowShowing, setShouldShowShowing] = useState(true);
+  const [collectionCycle, setCollectionCycle] = useState('');
 
-    const [token, setToken] = useState(null);
-    const [profile, setProfile] = useState(null);
-    const [completeharvesterdetails,setcompleteharvesterdetails] =useState({})
-    const [landId, setLandId] = useState(landDetails ? landDetails.id : null);
-    const [showingData, setShowingData] = useState({
-        "farmerLandId": landId,
-        "collectionCycle": "",
-        "sowing_date": "",
-        "sowingDuration": 0,
-        "grainType": "",
-        "expectedHarvestingDate": "",
-        "insertDataCoordinate": {
-            "type": "Point",
-              "coordinates": [
-              ]
+  const [token, setToken] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [completeharvesterdetails, setcompleteharvesterdetails] = useState({});
+  const [landId, setLandId] = useState(landDetails ? landDetails.id : null);
+  const [showingData, setShowingData] = useState({
+    farmerLandId: landId,
+    collectionCycle: '',
+    sowing_date: '',
+    sowingDuration: 0,
+    grainType: '',
+    expectedHarvestingDate: '',
+    insertDataCoordinate: {
+      type: 'Point',
+      coordinates: [],
+    },
+  });
+
+  useEffect(() => {
+    AsyncStorage.getItem('token').then(token => {
+      setToken(token);
+    });
+    AsyncStorage.getItem('profile').then(profile => {
+      setProfile(profile);
+      // console.log(JSON.parse(profile) ,'profileeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+    });
+  }, []);
+
+  useEffect(() => {
+    var collectionCycle = '';
+    // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
+    var today = new Date();
+    var currentMonth = today.getMonth();
+    var currentYear = today.getFullYear();
+    if (currentMonth >= 0 && currentMonth <= 6) {
+      collectionCycle = 'June' + '-' + currentYear;
+    } else if (currentMonth >= 7 && currentMonth <= 11) {
+      collectionCycle = 'December' + '-' + currentYear;
+    }
+    setCollectionCycle(collectionCycle);
+  }, []);
+
+  useEffect(() => {
+    if (collectionCycle && isViewMode) {
+      Axios.get(`landCollectionDetails/${landId}/${collectionCycle}`)
+        .then(res => {
+          console.log(res);
+          const json = res.data;
+          if (json?.sowing_date) {
+            const sowing_date = new Date(
+              json.sowing_date[0],
+              json.sowing_date[1] - 1,
+              json.sowing_date[2],
+            );
+            const expectedHarvestingDate = new Date(
+              json.expectedHarvestingDate[0],
+              json.expectedHarvestingDate[1] - 1,
+              json.expectedHarvestingDate[2],
+            );
+            console.log(
+              json.sowing_date[0],
+              json.sowing_date[1] - 1,
+              json.sowing_date[0],
+              'dateeeeeeeeeeeeeeeeeeee',
+            );
+            setShowingData({
+              ...showingData,
+              sowing_date,
+              expectedHarvestingDate,
+              sowingDuration: json.sowingDuration,
+              grainType: json.grainType,
+              collectionCycle: json.collectionCycle,
+              insertDataCoordinate: landDetails?.insertDataCoordinate,
+            });
+            setcompleteharvesterdetails(json);
+            setShowingDate(sowing_date);
+            setHarvestingDate(expectedHarvestingDate);
+            setShouldShowShowing(false);
+            return;
+          }
+          setShouldShowShowing(true);
+          setShowingData(state => ({
+            ...state,
+            collectionCycle,
+            insertDataCoordinate: landDetails?.insertDataCoordinate,
+          }));
+        })
+        .catch(err => {
+          alert('Something went wrong' + ' ' + err.message);
+          console.log(err);
+        });
+
+      // AsyncStorage.getItem("landCollectionDetails"+landId)
+      // .then((data) => {
+      //     // console.log('-------landCollectionDetails-------'+landId);
+      //     // console.log(data);
+      //     if(data){
+      //         const json = JSON.parse(data);
+      //         console.log(json)
+      //         var collectionCycle = "";
+      //                 // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
+      //                 var today = new Date();
+      //                 var currentMonth = today.getMonth();
+      //                 var currentYear = today.getFullYear();
+      //                 if(currentMonth >= 0 && currentMonth <= 6){
+      //                     collectionCycle = "June"+'-'+ currentYear;
+      //                 }else if(currentMonth >= 7 && currentMonth <= 11){
+      //                     collectionCycle = "December"+'-' + currentYear;
+      //                 }
+      //                 if(json[0]?.collectionCycle === collectionCycle){
+      //                     setShowingDate(new Date(json[0].sowing_date));
+      //                     setHarvestingDate(new Date(json[0].expectedHarvestingDate));
+
+      //                     setShowingData({
+      //                         ...showingData,
+      //                         sowing_date: new Date(json[0].sowing_date),
+      //                         expectedHarvestingDate: new Date(json[0].expectedHarvestingDate),
+      //                         sowingDuration: json[0].sowingDuration,
+      //                         grainType: json[0].grainType,
+      //                         collectionCycle: json[0].collectionCycle
+      //                     });
+      //                     setShouldShowShowing(false);
+      //                 }else{
+      //                     setShouldShowShowing(true);
+      //                 }
+      //         setCollectionCycle(collectionCycle);
+      //     }
+      // }
+      // )
+      // .catch((err) => {
+      //     console.log(err);
+      // });
+    }
+  }, [collectionCycle, landDetails]);
+
+  // useEffect(() => {
+  //     if(landId){
+  //         setShowingData({
+  //             ...showingData,
+  //             farmerLandId: landId
+  //         });
+  //     }
+  // }, [landId]);
+  // useEffect(() => {
+  //     setShowingData({
+  //         ...showingData,
+  //         sowing_date: new Date(),
+  //         expectedHarvestingDate: new Date()
+  //     });
+  // }, []);
+
+  useEffect(() => {
+    var collectionCycle = '';
+    // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
+    var today = new Date();
+    var currentMonth = today.getMonth();
+    var currentYear = today.getFullYear();
+    if (currentMonth >= 0 && currentMonth <= 6) {
+      if (currentMonth === 6) {
+        if (today.getDate() >= 15) {
+          collectionCycle = 'June' + '-' + currentYear;
+        } else {
+          collectionCycle = 'December' + '-' + currentYear;
         }
+      } else {
+        collectionCycle = 'June' + '-' + currentYear;
       }
-    );
-
-    useEffect(() => {
-        AsyncStorage.getItem('token').then((token) => {
-            setToken(token);
-        });
-        AsyncStorage.getItem('profile').then((profile) => {
-            setProfile(profile);
-            // console.log(JSON.parse(profile) ,'profileeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
-        });
-    }, []);
-
-    useEffect(() => {
-        var collectionCycle = "";
-            // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
-            var today = new Date();
-            var currentMonth = today.getMonth();
-            var currentYear = today.getFullYear();
-            if(currentMonth >= 0 && currentMonth <= 6){
-                collectionCycle = "June"+'-'+currentYear;
-            }else if(currentMonth >= 7 && currentMonth <= 11){
-                collectionCycle = "December" + '-'+ currentYear;
-            }
-            setCollectionCycle(collectionCycle);
-        }, []);
-
-        
-    useEffect(() => {
-        if(collectionCycle && isViewMode){
-            Axios.get(`landCollectionDetails/${landId}/${collectionCycle}`)
-            .then(res=>{
-                console.log(res)
-                const json=res.data
-                if(json?.sowing_date){
-                    const sowing_date=new Date(json.sowing_date[0],json.sowing_date[1] - 1,json.sowing_date[2])
-                    const expectedHarvestingDate = new Date(json.expectedHarvestingDate[0],json.expectedHarvestingDate[1] - 1,json.expectedHarvestingDate[2])
-                    console.log(json.sowing_date[0],json.sowing_date[1] - 1,json.sowing_date[0],'dateeeeeeeeeeeeeeeeeeee')
-                    setShowingData({
-                        ...showingData,
-                        sowing_date,
-                        expectedHarvestingDate,
-                        sowingDuration: json.sowingDuration,
-                        grainType: json.grainType,
-                        collectionCycle: json.collectionCycle,
-                        insertDataCoordinate:landDetails?.insertDataCoordinate
-                    });
-                    setcompleteharvesterdetails(json)
-                    setShowingDate(sowing_date);
-                    setHarvestingDate(expectedHarvestingDate);
-                    setShouldShowShowing(false);
-                    return
-                }
-                setShouldShowShowing(true);
-                setShowingData(state=>({...state,collectionCycle,insertDataCoordinate:landDetails?.insertDataCoordinate}))
-            })
-            .catch(err=>{
-                alert('Something went wrong' + " " + err.message)
-                console.log(err)
-            })
-
-            
-            
-            // AsyncStorage.getItem("landCollectionDetails"+landId)
-            // .then((data) => {
-            //     // console.log('-------landCollectionDetails-------'+landId);
-            //     // console.log(data);
-            //     if(data){
-            //         const json = JSON.parse(data);
-            //         console.log(json)
-            //         var collectionCycle = "";
-            //                 // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
-            //                 var today = new Date();
-            //                 var currentMonth = today.getMonth();
-            //                 var currentYear = today.getFullYear();
-            //                 if(currentMonth >= 0 && currentMonth <= 6){
-            //                     collectionCycle = "June"+'-'+ currentYear;
-            //                 }else if(currentMonth >= 7 && currentMonth <= 11){
-            //                     collectionCycle = "December"+'-' + currentYear;
-            //                 }
-            //                 if(json[0]?.collectionCycle === collectionCycle){
-            //                     setShowingDate(new Date(json[0].sowing_date));
-            //                     setHarvestingDate(new Date(json[0].expectedHarvestingDate));
-
-            //                     setShowingData({
-            //                         ...showingData,
-            //                         sowing_date: new Date(json[0].sowing_date),
-            //                         expectedHarvestingDate: new Date(json[0].expectedHarvestingDate),
-            //                         sowingDuration: json[0].sowingDuration,
-            //                         grainType: json[0].grainType,
-            //                         collectionCycle: json[0].collectionCycle
-            //                     });
-            //                     setShouldShowShowing(false);
-            //                 }else{
-            //                     setShouldShowShowing(true);
-            //                 }
-            //         setCollectionCycle(collectionCycle);
-            //     }
-            // }
-            // )
-            // .catch((err) => {
-            //     console.log(err);  
-            // });
+    } else if (currentMonth >= 7 && currentMonth <= 11) {
+      if (currentMonth === 11) {
+        if (today.getDate() <= 15) {
+          collectionCycle = 'December' + '-' + currentYear;
+        } else {
+          collectionCycle = 'June' + '-' + (currentYear + 1);
         }
-
-
-    }, [collectionCycle,landDetails]);
-
-
-    
-
-    // useEffect(() => {
-    //     if(landId){
-    //         setShowingData({
-    //             ...showingData,
-    //             farmerLandId: landId
-    //         });
+      } else {
+        collectionCycle = 'December' + '-' + currentYear;
+      }
+    }
+    // setShowingData({
+    //     ...showingData,
+    //     collectionCycle: collectionCycle,
+    //     farmerLandId: landId,
+    //     sowing_date: new Date(),
+    //     expectedHarvestingDate: new Date(),
+    //     insertDataCoordinate: {
+    //         type: "Point",
+    //         coordinates: location ? [location.insertDataCoordinate.coordinates[0], location.insertDataCoordinate.coordinates[1]]: [0, 0]
     //     }
-    // }, [landId]);
-    // useEffect(() => {
-    //     setShowingData({
-    //         ...showingData,
-    //         sowing_date: new Date(),
-    //         expectedHarvestingDate: new Date()
-    //     });
-    // }, []);
 
-    useEffect(() => {
-        var collectionCycle = "";
-        // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
-        var today = new Date();
-        var currentMonth = today.getMonth();
-        var currentYear = today.getFullYear();
-        if(currentMonth >= 0 && currentMonth <= 6){
-            if(currentMonth === 6){
-                if(today.getDate() >= 15){
-                    collectionCycle = "June"+'-' + currentYear;
-                }else{
-                    collectionCycle = "December"+'-' + currentYear;
-                }
-            }
-            else{
-                collectionCycle = "June" +'-'+ currentYear;
-            }
-        }else if(currentMonth >= 7 && currentMonth <= 11){
-            if(currentMonth === 11){
-                if(today.getDate() <= 15){
-                    collectionCycle = "December" +'-'+ currentYear;
-                }else{
-                    collectionCycle = "June" +'-'+ (currentYear + 1);
-                }
-            }
-            else{
-                collectionCycle = "December"+'-' + currentYear;
-            }
-        }
-        // setShowingData({
-        //     ...showingData,
-        //     collectionCycle: collectionCycle,
-        //     farmerLandId: landId,
-        //     sowing_date: new Date(),
-        //     expectedHarvestingDate: new Date(),
-        //     insertDataCoordinate: {
-        //         type: "Point",
-        //         coordinates: location ? [location.insertDataCoordinate.coordinates[0], location.insertDataCoordinate.coordinates[1]]: [0, 0]
-        //     }
-            
-        // });
-    }, [showingDate, harvestingDate, landId, location]);
+    // });
+  }, [showingDate, harvestingDate, landId, location]);
 
-
-    const [location, setLocation] = useState(null);
-    useEffect(() => {
-        Geolocation.getCurrentPosition((pos) => {
-          console.log(pos);
-          const crd = pos.coords;
-          console.log(crd);
+  const [location, setLocation] = useState(null);
+  useEffect(() => {
+    Geolocation.getCurrentPosition(
+      pos => {
+        console.log(pos);
+        const crd = pos.coords;
+        console.log(crd);
         //   setPosition({
         //     latitude: crd.latitude,
         //     longitude: crd.longitude,
@@ -230,1016 +257,1131 @@ export default function AddFarmerLand({navigation , route}) {
         //     longitudeDelta: 0.0421,
         //   });
 
-            setLocation({
-                insertDataCoordinate: {
-                    type: "Point",
-                    coordinates: [crd.longitude, crd.latitude]
-                }
-            });
-
-        },
-        (error) => {
-            console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
-      }, []);
-
-   
-
-    const [polygonCoords, setMyPolygonCoords ] = useState([]);
-
-    const [jsonData, setJsonData] = useState({
-        "landmark":"",
-        "plotNumOrSurveyNum":"",
-        "landSize":"",
-        "landUnit":"",
-        "harvestingPlan":"HARVESTER",
-        "landOwnership":"FARMEROWNED",
-        // "polygon":{
-        //         "type": "Point",
-        //         "coordinates": [
-        //            ]
-        //     },
-        "polygonCoordinate": "",
-        "insertDataCoordinate":{
-                "type": "Point",
-                "coordinates": [
-                  ]
-            },
-        "reaperNeeded":true,
-        "landCatchmentId":0,
-        "distanceToWaterSource":0,
-        "overrideByUser": "N"
-        
+        setLocation({
+          insertDataCoordinate: {
+            type: 'Point',
+            coordinates: [crd.longitude, crd.latitude],
+          },
         });
-    
-    const [imageUri, setImageUri] = useState(null);
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  }, []);
 
-    const [showDetails, setShowDetails] = useState(true);
-    const [showHarvestingDetails, setShowHarvestingDetails] = useState(false);
-    const [showRawMaterialDetails, setShowRawMaterialDetails] = useState(false);
+  const [polygonCoords, setMyPolygonCoords] = useState([]);
 
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showingDate, setShowingDate] = useState(new Date());
-    const [showHarvestingDatePicker, setShowHarvestingDatePicker] = useState(false);
-    const [harvestingDate, setHarvestingDate] = useState(new Date());
+  const [jsonData, setJsonData] = useState({
+    landmark: '',
+    plotNumOrSurveyNum: '',
+    landSize: '',
+    landUnit: '',
+    harvestingPlan: 'HARVESTER',
+    landOwnership: 'FARMEROWNED',
+    // "polygon":{
+    //         "type": "Point",
+    //         "coordinates": [
+    //            ]
+    //     },
+    polygonCoordinate: '',
+    insertDataCoordinate: {
+      type: 'Point',
+      coordinates: [],
+    },
+    reaperNeeded: true,
+    landCatchmentId: 0,
+    distanceToWaterSource: 0,
+    overrideByUser: 'N',
+  });
 
-    // const polygonCoords = useSelector((state) => state.areaCordinates);
+  const [imageUri, setImageUri] = useState(null);
 
-    const [areaCalculation, setAreaCalculation] = useState(0);
+  const [showDetails, setShowDetails] = useState(true);
+  const [showHarvestingDetails, setShowHarvestingDetails] = useState(false);
+  const [showRawMaterialDetails, setShowRawMaterialDetails] = useState(false);
 
-    const [catchementAreaList, setCatchementAreaList] = useState([]);
-    const [selectedCatchementArea, setSelectedCatchementArea] = useState(0);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showingDate, setShowingDate] = useState(new Date());
+  const [showHarvestingDatePicker, setShowHarvestingDatePicker] =
+    useState(false);
+  const [harvestingDate, setHarvestingDate] = useState(new Date());
 
+  // const polygonCoords = useSelector((state) => state.areaCordinates);
 
-    useEffect(() => {
-        if(areaCalculation > 0 && jsonData.landSize !== ""){
-        //    check if the difference is less more than 20% or not
-            var diff = Math.abs(areaCalculation - jsonData.landSize);
-            var percentage = (diff / jsonData.landSize) * 100;
-            console.log(percentage);
-            if(percentage >= 20 && !isViewMode){
-                // alert with yes or no to override
-                Alert.alert(
-                    "Override",
-                    "Map calculated area & area provide by farmer is differer by 20% Do You want to override the data?",
-                    [
-                        {
-                            text: "No",
-                            onPress: () => {
-                                setJsonData({
-                                    ...jsonData,
-                                    overrideByUser: "N"
-                                });
-                            },
-                            style: "cancel"
-                        },
-                        { text: "Yes", onPress: () => {
-                            setJsonData({
-                                ...jsonData,
-                                overrideByUser: "Y"
-                            });
-                        } }
-                    ],
-                    { cancelable: false }
-                );
-                return;
-            }
-        }
-    }, [areaCalculation]);
+  const [areaCalculation, setAreaCalculation] = useState(0);
 
+  const [catchementAreaList, setCatchementAreaList] = useState([]);
+  const [selectedCatchementArea, setSelectedCatchementArea] = useState(0);
 
-    const submitLandDetails = () => {
-        // Check if user have Permission for this action 
-        const {accessUserRole} =JSON.parse(profile)
-        try{
-            checkAuth(accessUserRole,'FARMERUPDATE')
-            console.log('working')
-        // check all fields are filled or not one by one
-        if(jsonData.plotNumOrSurveyNum === ""){
-            alert('Please enter plot number or survey number');
-            return;
-        }
-
-        if(jsonData.landSize === ""){
-            alert('Please enter land size');
-            return;
-        }
-        if(jsonData.landUnit === ""){
-            alert('Please enter land unit');
-            return;
-        }
-        
-        console.log(farmerId);
-        console.log(jsonData);
-        Axios.post('/farmerLand/'+farmerId, jsonData).then((res) => {
-            console.log(res.data);
-            console.log(res.data.id);
-            // go back to previous screen
-            fetchFarmerLands();
-            setLandId(res.data.id);
-            setShowDetails(true);
-            setfarmDetailsAdded(true)
-            alert('Land added successfully');
-            // navigation.goBack();
-        }).catch((err) => {
-            console.log(err.response);
-            alert('Error adding land details');
-        }
-        );
-        }catch(err){
-            alert(err.message)
-        }
-
-        
-    }
-
-    const updateLandDetails = () => {
-        // Check if user have Permission for this action 
-        const {accessUserRole} =JSON.parse(profile)
-        try{
-            checkAuth(accessUserRole,'FARMERUPDATE')
-            console.log(JSON.stringify(jsonData));
-            Axios.put(
-                '/farmerLand/'+farmerId,
-                jsonData
-            ).then((res) => {
-                console.log(res.data);
-                alert('Land updated successfully');
-                // go back to previous screen
-                fetchFarmerLands();
-                navigation.goBack();
-            }).catch((err) => {
-                // print error status
-                console.log(err);
-                console.log(err.response);
-                alert('Error adding land details');
-            }
-        );
-        }catch(err){
-            alert(err.message)
-        }
-        
-    }
-
-    useEffect(() => {
-        if(profile === null){
-            return;
-        }
-        Axios.get('/catchmentArea/'+JSON.parse(profile).orgUnitId)
-        .then((res) => {
-            // console.log(res.data);
-            setCatchementAreaList(res.data);
-            setSelectedCatchementArea(res.data.findIndex((item) => item.id === landDetails.landCatchmentId));
-        }).catch((err) => {
-            // console.log(err);
-        });
-
-    }, [profile]);
-
-    useEffect(() => {
-        if (isViewMode) {
-            if(redirect){
-                return
-            }
-            console.log(landDetails);
-
-            
-            // console.log(landDetails.landOwnership);
-            setJsonData({...jsonData,
-                id: landDetails.id,
-                landmark: landDetails.landmark,
-                landSize: landDetails.landSize,
-                landCatchmentId: landDetails.landCatchmentId,
-                plotNumOrSurveyNum: landDetails.plotNumOrSurveyNum,
-                harvestingPlan: landDetails.harvestingPlan,
-                landOwnership: landDetails.landOwnership,
-                reaperNeeded: landDetails.reaperNeeded,
-                distanceToWaterSource: landDetails.distanceToWaterSource,
-                // polygon: {
-                //     ...jsonData.polygon,
-                //     coordinates: landDetails.polygon.coordinates
-                // },
-                polygonCoordinate: landDetails.polygonCoordinate,
-                insertDataCoordinate: {
-                    ...jsonData.insertDataCoordinate,
-                    coordinates: landDetails.insertDataCoordinate.coordinates
-                },
-                autoCalcLandArea: landDetails.autoCalcLandArea,
-                overrideByUser: landDetails.overrideByUser,
-                landUnit: landDetails.landUnit,
-                catchmentName: landDetails.catchmentName,
-                tenantId: landDetails.tenantId,
-            });
-
-            // loop through the coordinates and set the polygon
-            var latlongArray = JSON.parse(landDetails.polygonCoordinate) || [];
-            var newpolygonCoords = [];
-            latlongArray.forEach((element) => {
-                newpolygonCoords.push({
-                    latitude: element[1],
-                    longitude: element[0],
+  useEffect(() => {
+    if (areaCalculation > 0 && jsonData.landSize !== '') {
+      //    check if the difference is less more than 20% or not
+      var diff = Math.abs(areaCalculation - jsonData.landSize);
+      var percentage = (diff / jsonData.landSize) * 100;
+      console.log(percentage);
+      if (percentage >= 20 && !isViewMode) {
+        // alert with yes or no to override
+        Alert.alert(
+          'Override',
+          'Map calculated area & area provide by farmer is differer by 20% Do You want to override the data?',
+          [
+            {
+              text: 'No',
+              onPress: () => {
+                setJsonData({
+                  ...jsonData,
+                  overrideByUser: 'N',
                 });
-            });
+              },
+              style: 'cancel',
+            },
+            {
+              text: 'Yes',
+              onPress: () => {
+                setJsonData({
+                  ...jsonData,
+                  overrideByUser: 'Y',
+                });
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+        return;
+      }
+    }
+  }, [areaCalculation]);
 
-            setMyPolygonCoords(
-                newpolygonCoords
-            );
+  const submitLandDetails = () => {
+    // Check if user have Permission for this action
+    const {accessUserRole} = JSON.parse(profile);
+    try {
+      checkAuth(accessUserRole, 'FARMERUPDATE');
+      console.log('working');
+      // check all fields are filled or not one by one
+      if (jsonData.plotNumOrSurveyNum === '') {
+        alert('Please enter plot number or survey number');
+        return;
+      }
 
-            setAreaCalculation(Number(landDetails.autoCalcLandArea));
-        }
-    }, [landDetails]);
+      if (jsonData.landSize === '') {
+        alert('Please enter land size');
+        return;
+      }
+      if (jsonData.landUnit === '') {
+        alert('Please enter land unit');
+        return;
+      }
 
+      console.log(farmerId);
+      console.log(jsonData);
+      Axios.post('/farmerLand/' + farmerId, jsonData)
+        .then(res => {
+          console.log(res.data);
+          console.log(res.data.id);
+          // go back to previous screen
+          fetchFarmerLands();
+          setLandId(res.data.id);
+          setShowDetails(true);
+          setfarmDetailsAdded(true);
+          alert('Land added successfully');
+          // navigation.goBack();
+        })
+        .catch(err => {
+          console.log(err.response);
+          alert('Error adding land details');
+        });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
+  const updateLandDetails = () => {
+    // Check if user have Permission for this action
+    const {accessUserRole} = JSON.parse(profile);
+    try {
+      checkAuth(accessUserRole, 'FARMERUPDATE');
+      console.log(JSON.stringify(jsonData));
+      Axios.put('/farmerLand/' + farmerId, jsonData)
+        .then(res => {
+          console.log(res.data);
+          alert('Land updated successfully');
+          // go back to previous screen
+          fetchFarmerLands();
+          navigation.goBack();
+        })
+        .catch(err => {
+          // print error status
+          console.log(err);
+          console.log(err.response);
+          alert('Error adding land details');
+        });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
-    useEffect(() => {
-        // console.log(polygonCoords);
-        if (polygonCoords.length > 2) {
-            const areaInAcres = calculateAreaInAcres();
-            // console.log(areaInAcres);
-            setAreaCalculation(Number(areaInAcres));
+  useEffect(() => {
+    if (profile === null) {
+      return;
+    }
+    Axios.get('/catchmentArea/' + JSON.parse(profile).orgUnitId)
+      .then(res => {
+        // console.log(res.data);
+        setCatchementAreaList(res.data);
+        setSelectedCatchementArea(
+          res.data.findIndex(item => item.id === landDetails.landCatchmentId),
+        );
+      })
+      .catch(err => {
+        // console.log(err);
+      });
+  }, [profile]);
 
-            var latlongArray = [];
-            var latLogNormal = [];
-            polygonCoords.forEach((element) => {
-                latlongArray.push([element.longitude, element.latitude]);
-                latLogNormal.push(element.longitude);
-                latLogNormal.push(element.latitude);
-            });
-            // console.log(latlongArray);
-            setJsonData({...jsonData,
-                autoCalcLandArea: Number(areaInAcres),
-                // polygon: {
-                //     ...jsonData.polygon,
-                //     coordinates: latlongArray
-                // },
-                polygonCoordinate: JSON.stringify(latlongArray),
-                insertDataCoordinate: {
-                    ...jsonData.insertDataCoordinate,
-                    coordinates: latLogNormal
-                }
-            });
-        }
-    }, [polygonCoords]);
-    
-    const calculateAreaInAcres = () => {
-        const polygonCoordinates = polygonCoords.flat(); // flatten the array of arrays
-        const areaInSquareMeters = getAreaOfPolygon(polygonCoordinates);
-        const areaInAcres = areaInSquareMeters / 4046.85642;
-        return areaInAcres.toFixed(2); // return the result rounded to 2 decimal places
-      };
-    
-// useEffect(() => {
-//         console.log(jsonData);
-//     }, [jsonData]);
+  useEffect(() => {
+    if (isViewMode) {
+      if (redirect) {
+        return;
+      }
+      console.log(landDetails);
+
+      // console.log(landDetails.landOwnership);
+      setJsonData({
+        ...jsonData,
+        id: landDetails.id,
+        landmark: landDetails.landmark,
+        landSize: landDetails.landSize,
+        landCatchmentId: landDetails.landCatchmentId,
+        plotNumOrSurveyNum: landDetails.plotNumOrSurveyNum,
+        harvestingPlan: landDetails.harvestingPlan,
+        landOwnership: landDetails.landOwnership,
+        reaperNeeded: landDetails.reaperNeeded,
+        distanceToWaterSource: landDetails.distanceToWaterSource,
+        // polygon: {
+        //     ...jsonData.polygon,
+        //     coordinates: landDetails.polygon.coordinates
+        // },
+        polygonCoordinate: landDetails.polygonCoordinate,
+        insertDataCoordinate: {
+          ...jsonData.insertDataCoordinate,
+          coordinates: landDetails.insertDataCoordinate.coordinates,
+        },
+        autoCalcLandArea: landDetails.autoCalcLandArea,
+        overrideByUser: landDetails.overrideByUser,
+        landUnit: landDetails.landUnit,
+        catchmentName: landDetails.catchmentName,
+        tenantId: landDetails.tenantId,
+      });
+
+      // loop through the coordinates and set the polygon
+      var latlongArray = JSON.parse(landDetails.polygonCoordinate) || [];
+      var newpolygonCoords = [];
+      latlongArray.forEach(element => {
+        newpolygonCoords.push({
+          latitude: element[1],
+          longitude: element[0],
+        });
+      });
+
+      setMyPolygonCoords(newpolygonCoords);
+
+      setAreaCalculation(Number(landDetails.autoCalcLandArea));
+    }
+  }, [landDetails]);
+
+  useEffect(() => {
+    // console.log(polygonCoords);
+    if (polygonCoords.length > 2) {
+      const areaInAcres = calculateAreaInAcres();
+      // console.log(areaInAcres);
+      setAreaCalculation(Number(areaInAcres));
+
+      var latlongArray = [];
+      var latLogNormal = [];
+      polygonCoords.forEach(element => {
+        latlongArray.push([element.longitude, element.latitude]);
+        latLogNormal.push(element.longitude);
+        latLogNormal.push(element.latitude);
+      });
+      // console.log(latlongArray);
+      setJsonData({
+        ...jsonData,
+        autoCalcLandArea: Number(areaInAcres),
+        // polygon: {
+        //     ...jsonData.polygon,
+        //     coordinates: latlongArray
+        // },
+        polygonCoordinate: JSON.stringify(latlongArray),
+        insertDataCoordinate: {
+          ...jsonData.insertDataCoordinate,
+          coordinates: latLogNormal,
+        },
+      });
+    }
+  }, [polygonCoords]);
+
+  const calculateAreaInAcres = () => {
+    const polygonCoordinates = polygonCoords.flat(); // flatten the array of arrays
+    const areaInSquareMeters = getAreaOfPolygon(polygonCoordinates);
+    const areaInAcres = areaInSquareMeters / 4046.85642;
+    return areaInAcres.toFixed(2); // return the result rounded to 2 decimal places
+  };
+
+  // useEffect(() => {
+  //         console.log(jsonData);
+  //     }, [jsonData]);
 
   // Create view that have list of all setting options
   const options = [
-    { label: "YES", value: "Yes" },
-    { label: "NO", value: "No" },
+    {label: 'YES', value: 'Yes'},
+    {label: 'NO', value: 'No'},
   ];
 
   const harvestingPlanOptions = [
-    { label: "HARVESTER", value: "Harvester" },
-    { label: "MANUAL", value: "Manual" },
+    {label: 'HARVESTER', value: 'Harvester'},
+    {label: 'MANUAL', value: 'Manual'},
   ];
   const landOwnerOptions = [
-    { label: "OWNED", value: "Owned" },
-    { label: "LEASED", value: "Leased" },
+    {label: 'OWNED', value: 'Owned'},
+    {label: 'LEASED', value: 'Leased'},
   ];
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#fff',
-          alignItems: 'flex-start',
-        }}>
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'flex-start',
+      }}>
+      <>
+        <DatePicker
+          modal
+          open={showDatePicker}
+          date={showingDate}
+          onConfirm={date => {
+            console.log(date, 'test');
+            setShowDatePicker(false);
+            setShowingDate(date);
 
-        <>
-            <DatePicker
-                modal
-                open={showDatePicker}
-                date={showingDate}
-                onConfirm={(date) => {
-                    console.log(date,'test');
-                    setShowDatePicker(false);
-                    setShowingDate(date);
-                    
-                    setShowingData({
-                        ...showingData,
-                        sowing_date: date.toISOString()
-                    })
-                }}
-                onCancel={() => {
-                    setShowDatePicker(false);
-                }}
-            />
-        </>
+            setShowingData({
+              ...showingData,
+              sowing_date: date.toISOString(),
+            });
+          }}
+          onCancel={() => {
+            setShowDatePicker(false);
+          }}
+        />
+      </>
 
-    <>
-      <DatePicker
-        modal
-        open={showHarvestingDatePicker}
-        date={harvestingDate}
-        onConfirm={(date) => {
+      <>
+        <DatePicker
+          modal
+          open={showHarvestingDatePicker}
+          date={harvestingDate}
+          onConfirm={date => {
             console.log(date);
             setShowHarvestingDatePicker(false);
             setHarvestingDate(date);
 
             setShowingData({
-                ...showingData,
-                // make it string on same format as
-                expectedHarvestingDate: date.toISOString()
-            })
-        }}
-        onCancel={() => {
+              ...showingData,
+              // make it string on same format as
+              expectedHarvestingDate: date.toISOString(),
+            });
+          }}
+          onCancel={() => {
             setShowHarvestingDatePicker(false);
-        }}
-      />
-    </>
-        <ScrollView
+          }}
+        />
+      </>
+      <ScrollView
+        style={{
+          width: '100%',
+        }}>
+        <View
+          style={{
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: 10,
+          }}>
+          <Text
             style={{
-                width: '100%',
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#000000',
+              marginTop: 0,
+              width: '100%',
+              paddingLeft: 20,
+              alignSelf: 'center',
+              textAlign: 'center',
+            }}>
+            {farmerName}
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 1,
+              backgroundColor: '#000000',
+              marginTop: 10,
             }}
-        >
-            <View
-                style={{
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              marginTop: 10,
+              position: 'relative',
+            }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginTop: 0,
+                width: '100%',
+                paddingLeft: 20,
+                alignSelf: 'flex-start',
+              }}>
+              Land Details
+            </Text>
+          </View>
+
+          <Stack
+            style={{
+              width: '100%',
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingBottom: 30,
+            }}>
+            {!redirect && (
+              <>
+                <TextInput
+                  label="Land Area Provided by Farmer (in acres)*"
+                  variant="standard"
+                  style={{
+                    marginTop: 20,
+                  }}
+                  keyboardType="numeric"
+                  editable={isEditable}
+                  value={String(jsonData.landSize) || ''}
+                  onChangeText={text => {
+                    setJsonData({
+                      ...jsonData,
+                      landSize: text,
+                      landUnit: 'acres',
+                    });
+                  }}
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    if (isEditable) {
+                      navigation.navigate('MapView', {
+                        polygonCoords,
+                        setMyPolygonCoords,
+                      });
+                    }
+                  }}
+                  style={{
                     marginTop: 10,
-                }}
-            >
-                <Text style={{
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                    color: '#000000',
-                    marginTop: 0,
-                    width: '100%',
-                    paddingLeft: 20,
-                    alignSelf: 'center',
-                    textAlign: 'center',
-                    }}>{farmerName}</Text>
-                    <View
-                        style={{
-                            width: '100%',
-                            height: 1,
-                            backgroundColor: '#000000',
-                            marginTop: 10,
-                        }}
-                    />
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        width: '100%',
-                        marginTop: 10,
-                        position: 'relative',
+                  }}>
+                  <TextInput
+                    label="Automatic Area Calculated*"
+                    variant="standard"
+                    editable={false}
+                    value={String(areaCalculation) || ''}
+                    // icon on right side of text input
+                    trailing={
+                      <FontAwesome5
+                        name="map-marked-alt"
+                        size={20}
+                        color="#B21B1D"
+                      />
+                    }
+                  />
+                </TouchableOpacity>
+                {isViewMode && polygonCoords && polygonCoords.length > 0 && (
+                  <MapView
+                    style={{width: '100%', height: 200}}
+                    region={{
+                      latitude:
+                        polygonCoords.length > 0
+                          ? polygonCoords[0].latitude
+                          : 0,
+                      longitude:
+                        polygonCoords.length > 0
+                          ? polygonCoords[0].longitude
+                          : 0,
+                      // zoom level based on the area of the polygon
+                      latitudeDelta: 0.005,
+                      longitudeDelta: 0.005,
                     }}
-                >
-                    <Text style={{
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                    color: '#000000',
-                    marginTop: 0,
-                    width: '100%',
-                    paddingLeft: 20,
-                    alignSelf: 'flex-start',
-                    }}>Land Details</Text>
-                </View>
-
-                <Stack style={{ width: '100%', paddingLeft: 20, paddingRight:20, paddingBottom: 30 }}>
-                {!redirect &&<>
-                    <TextInput
-                        label="Land Area Provided by Farmer (in acres)*"
-                        variant="standard"
-                        style={{
-                            marginTop: 20,
-                        }}
-                        keyboardType='numeric'
-                        editable={isEditable}
-                        value={String(jsonData.landSize) || ''}
-                        onChangeText={(text) => {
-                            setJsonData({...jsonData,
-                                landSize: text,
-                                landUnit: 'acres',
-                            });
-                        }}
-                    />
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (isEditable){
-                                navigation.navigate('MapView', {polygonCoords, setMyPolygonCoords});
-                            }
-                        }}
-                        style={{
-                            marginTop: 10,
-                        }}
-                    >
-                    <TextInput
-                        label="Automatic Area Calculated*"
-                        variant="standard"
-                        editable={false}
-                        value={String(areaCalculation) || ''}
-                        // icon on right side of text input
-                        trailing={<FontAwesome5 name="map-marked-alt" size={20} color="#B21B1D" />}
-                    />
-                    </TouchableOpacity>
-                    { isViewMode && polygonCoords && polygonCoords.length > 0 && (
-                    <MapView
-                        style={{ width: '100%', height: 200 }}
-                        region={{
-                            latitude: polygonCoords.length > 0 ? polygonCoords[0].latitude : 0,
-                            longitude: polygonCoords.length > 0 ? polygonCoords[0].longitude : 0,
-                            // zoom level based on the area of the polygon
-                            latitudeDelta: 0.005,
-                            longitudeDelta: 0.005,
-                        }}
-                        mapType="satellite"
-                        zoomEnabled={true}
-                    >
-                        {polygonCoords.length > 0 && (
-                            <Polygon
-                                coordinates={polygonCoords}
-                            />
-                        )}
-                    </MapView>
+                    mapType="satellite"
+                    zoomEnabled={true}>
+                    {polygonCoords.length > 0 && (
+                      <Polygon coordinates={polygonCoords} />
                     )}
+                  </MapView>
+                )}
 
-                    { isEditable ? (
-                        <>
-                    <Text style={{
+                {isEditable ? (
+                  <>
+                    <Text
+                      style={{
                         fontSize: 16,
                         color: '#000000',
                         marginTop: 10,
                         width: '90%',
-                    }}>Catchment Area*</Text>
+                      }}>
+                      Catchment Area*
+                    </Text>
 
                     <Picker
-                        selectedValue={selectedCatchementArea}
-                        style={{ height: 50, width: '90%', marginTop: 10 }}
-                        onValueChange={(itemValue, itemIndex) => {
-                            setSelectedCatchementArea(itemValue)
-                            setJsonData({...jsonData, landCatchmentId: itemValue});
-                        }}
-                    >
-                        {
-                            catchementAreaList.map((item, index) => {
-                                return (
-                                    <Picker.Item label={item.name} value={item.id} key={index} />
-                                )
-                            })
-                        }
-                        
+                      selectedValue={selectedCatchementArea}
+                      style={{height: 50, width: '90%', marginTop: 10}}
+                      onValueChange={(itemValue, itemIndex) => {
+                        setSelectedCatchementArea(itemValue);
+                        setJsonData({...jsonData, landCatchmentId: itemValue});
+                      }}>
+                      {catchementAreaList.map((item, index) => {
+                        return (
+                          <Picker.Item
+                            label={item.name}
+                            value={item.id}
+                            key={index}
+                          />
+                        );
+                      })}
                     </Picker>
-                    </>
-                    ) : (
-                        <TextInput
-                        label="Catchment Area"
-                        variant="standard"
-                        style={{
-                            marginTop: 10,
-                        }}
-                        value={landDetails.catchmentName}
-                        editable={isEditable}
-                        trailing={ isEditable?<AntDesign name="down" size={20} color="#000000" />:null}
-                    />
-                    )}
-
-                    <TextInput
-                        label="Survey No/Plot No."
-                        variant="standard"
-                        style={{
-                            marginTop: 20,
-                        }}
-                        editable={isEditable}
-                        value={jsonData.plotNumOrSurveyNum}
-                        onChangeText={(text) => {
-                            setJsonData({...jsonData, plotNumOrSurveyNum: text});
-                        }}
-                    />
-                    <TextInput
-                        label="Landmark"
-                        variant="standard"
-                        style={{
-                            marginTop: 10,
-                        }}
-                        value={jsonData.landmark}
-                        editable={isEditable}
-                        onChangeText={(text) => {
-                            setJsonData({...jsonData, landmark: text});
-                        }}
-                    />
-                    <Stack style={{ width: '100%', marginTop: 10 }} direction="row">
-                        <Text style={{
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            color: '#000000',
-                            marginLeft: 10,
-                            width: '50%',
-                            alignSelf: 'center',
-                        }}>Harvesting Plan*</Text>
-
-                    <SwitchSelector
-                        options={harvestingPlanOptions}
-                        initial={
-                            !isEditable? landDetails.harvestingPlan === 'HARVESTER' ? 0 : 1
-                            : jsonData.harvestingPlan === 'HARVESTER' ? 0 : 1
-                        }
-                        onPress={value => setJsonData({...jsonData, harvestingPlan: value})}
-                        style={{
-                            marginTop: 10,
-                            width: '50%',
-                        }}
-                        disabled={!isEditable}
-                        />
-                    </Stack>
-                    <Stack style={{ width: '100%', marginTop: 10 }} direction="row">
-                        <Text style={{
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            color: '#000000',
-                            marginLeft: 10,
-                            width: '50%',
-                            alignSelf: 'center',
-                        }}>Land Ownership*</Text>
-
-                    <SwitchSelector
-                        options={landOwnerOptions}
-                        initial={
-                            !isEditable? landDetails.landOwnership === 'FARMEROWNED' ? 0 : 1
-                            : jsonData.landOwnership === 'FARMEROWNED' ? 0 : 1
-                        }
-                        onPress={value => setJsonData({...jsonData, landOwnership: value})}
-                        style={{
-                            marginTop: 10,
-                            width: '50%',
-                        }}
-                        disabled={!isEditable}
-                        />
-                    </Stack>
-                    <Stack style={{ width: '100%', marginTop: 10 }} direction="row">
-                        <Text style={{
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            color: '#000000',
-                            marginLeft: 10,
-                            width: '50%',
-                            alignSelf: 'center',
-                        }}>Reaper Needed*</Text>
-
-                    <SwitchSelector
-                        options={options}
-                        initial={
-                            !isEditable? landDetails.reaperNeeded === true ? 0 : 1
-                            : jsonData.reaperNeeded === true ? 0 : 1
-                        }
-                        onPress={value => setJsonData({...jsonData, reaperNeeded: value==='Yes'?true:false})}
-                        style={{
-                            marginTop: 10,
-                            width: '50%',
-                        }}
-                        disabled={!isEditable}
-                        />
-                    </Stack>
-                    {!redirect && !isEditable && (
-                    <TouchableOpacity
-                        style={{
-                            marginTop: 10,
-                            alignSelf: 'flex-end',
-                            padding: 10,
-                            backgroundColor: '#B21B1D',
-                            // make it round
-                            borderRadius: 50,
-                        }}
-                        onPress={() => {
-                            setIsEditable(!isEditable);
-                            setShowDetails(true);
-                        }}
-                    >
-                        <AntDesign name="edit" size={25} color="#FFFFFF" />
-                    </TouchableOpacity>
-                    )}
-                    <TextInput
-                        label="Distance From Water Source (In Meters)"
-                        variant="standard"
-                        style={{
-                            marginTop: 20,
-                        }}
-                        // only numbers
-                        keyboardType="numeric"
-                        value={String(jsonData.distanceToWaterSource) || ''}
-                        editable={isEditable}
-                        onChangeText={(text) => {
-                            setJsonData({...jsonData, distanceToWaterSource: Number(text)});
-                        }}
-                    />
-            </>}
-            {!redirect && isEditable && !farmDetailsAdded && (
-                
-            <Stack style={{ width: '100%', marginTop: 30, justifyContent: 'space-between' }} direction="row">
-                <Button
-                    mode="contained"
-                    title="Discard"
+                  </>
+                ) : (
+                  <TextInput
+                    label="Catchment Area"
+                    variant="standard"
                     style={{
-                        width: '40%',
-                        backgroundColor: '#B21B1D',
-                        marginTop: 10,
+                      marginTop: 10,
                     }}
-                    onPress={() => navigation.goBack()}
-                >
-                </Button>
-                <Button
-                    mode="contained"
-                    title="Save"
+                    value={landDetails.catchmentName}
+                    editable={isEditable}
+                    trailing={
+                      isEditable ? (
+                        <AntDesign name="down" size={20} color="#000000" />
+                      ) : null
+                    }
+                  />
+                )}
+
+                <TextInput
+                  label="Survey No/Plot No."
+                  variant="standard"
+                  style={{
+                    marginTop: 20,
+                  }}
+                  editable={isEditable}
+                  value={jsonData.plotNumOrSurveyNum}
+                  onChangeText={text => {
+                    setJsonData({...jsonData, plotNumOrSurveyNum: text});
+                  }}
+                />
+                <TextInput
+                  label="Landmark"
+                  variant="standard"
+                  style={{
+                    marginTop: 10,
+                  }}
+                  value={jsonData.landmark}
+                  editable={isEditable}
+                  onChangeText={text => {
+                    setJsonData({...jsonData, landmark: text});
+                  }}
+                />
+                <Stack style={{width: '100%', marginTop: 10}} direction="row">
+                  <Text
                     style={{
-                        width: '40%',
-                        backgroundColor: '#B21B1D',
-                        marginTop: 10,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                      marginLeft: 10,
+                      width: '50%',
+                      alignSelf: 'center',
+                    }}>
+                    Harvesting Plan*
+                  </Text>
+
+                  <SwitchSelector
+                    options={harvestingPlanOptions}
+                    initial={
+                      !isEditable
+                        ? landDetails.harvestingPlan === 'HARVESTER'
+                          ? 0
+                          : 1
+                        : jsonData.harvestingPlan === 'HARVESTER'
+                        ? 0
+                        : 1
+                    }
+                    onPress={value =>
+                      setJsonData({...jsonData, harvestingPlan: value})
+                    }
+                    style={{
+                      marginTop: 10,
+                      width: '50%',
                     }}
-                    onPress={() => !isViewMode? submitLandDetails(): updateLandDetails()}
-                >
-                </Button>
+                    disabled={!isEditable}
+                  />
                 </Stack>
+                <Stack style={{width: '100%', marginTop: 10}} direction="row">
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                      marginLeft: 10,
+                      width: '50%',
+                      alignSelf: 'center',
+                    }}>
+                    Land Ownership*
+                  </Text>
+
+                  <SwitchSelector
+                    options={landOwnerOptions}
+                    initial={
+                      !isEditable
+                        ? landDetails.landOwnership === 'FARMEROWNED'
+                          ? 0
+                          : 1
+                        : jsonData.landOwnership === 'FARMEROWNED'
+                        ? 0
+                        : 1
+                    }
+                    onPress={value =>
+                      setJsonData({...jsonData, landOwnership: value})
+                    }
+                    style={{
+                      marginTop: 10,
+                      width: '50%',
+                    }}
+                    disabled={!isEditable}
+                  />
+                </Stack>
+                <Stack style={{width: '100%', marginTop: 10}} direction="row">
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                      marginLeft: 10,
+                      width: '50%',
+                      alignSelf: 'center',
+                    }}>
+                    Reaper Needed*
+                  </Text>
+
+                  <SwitchSelector
+                    options={options}
+                    initial={
+                      !isEditable
+                        ? landDetails.reaperNeeded === true
+                          ? 0
+                          : 1
+                        : jsonData.reaperNeeded === true
+                        ? 0
+                        : 1
+                    }
+                    onPress={value =>
+                      setJsonData({
+                        ...jsonData,
+                        reaperNeeded: value === 'Yes' ? true : false,
+                      })
+                    }
+                    style={{
+                      marginTop: 10,
+                      width: '50%',
+                    }}
+                    disabled={!isEditable}
+                  />
+                </Stack>
+                {!redirect && !isEditable && (
+                  <TouchableOpacity
+                    style={{
+                      marginTop: 10,
+                      alignSelf: 'flex-end',
+                      padding: 10,
+                      backgroundColor: '#B21B1D',
+                      // make it round
+                      borderRadius: 50,
+                    }}
+                    onPress={() => {
+                      setIsEditable(!isEditable);
+                      setShowDetails(true);
+                    }}>
+                    <AntDesign name="edit" size={25} color="#FFFFFF" />
+                  </TouchableOpacity>
+                )}
+                <TextInput
+                  label="Distance From Water Source (In Meters)"
+                  variant="standard"
+                  style={{
+                    marginTop: 20,
+                  }}
+                  // only numbers
+                  keyboardType="numeric"
+                  value={String(jsonData.distanceToWaterSource) || ''}
+                  editable={isEditable}
+                  onChangeText={text => {
+                    setJsonData({
+                      ...jsonData,
+                      distanceToWaterSource: Number(text),
+                    });
+                  }}
+                />
+              </>
+            )}
+            {!redirect && isEditable && !farmDetailsAdded && (
+              <Stack
+                style={{
+                  width: '100%',
+                  marginTop: 30,
+                  justifyContent: 'space-between',
+                }}
+                direction="row">
+                <Button
+                  mode="contained"
+                  title="Discard"
+                  style={{
+                    width: '40%',
+                    backgroundColor: '#B21B1D',
+                    marginTop: 10,
+                  }}
+                  onPress={() => navigation.goBack()}></Button>
+                <Button
+                  mode="contained"
+                  title="Save"
+                  style={{
+                    width: '40%',
+                    backgroundColor: '#B21B1D',
+                    marginTop: 10,
+                  }}
+                  onPress={() =>
+                    !isViewMode ? submitLandDetails() : updateLandDetails()
+                  }></Button>
+              </Stack>
             )}
 
-                    {!redirect &&
-                        <>
-                    <View
+            {!redirect && (
+              <>
+                <View
+                  style={{
+                    marginTop: 20,
+                    alignSelf: 'flex-end',
+                    padding: 10,
+                    backgroundColor: '#B21B1D',
+                    // make it round
+                    borderRadius: 50,
+                  }}>
+                  {/* Show only month and year like July 2022 */}
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: '#fff',
+                    }}>
+                    {collectionCycle}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: 20,
+                    flexDirection: 'column',
+                  }}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      position: 'relative',
+                    }}
+                    // onPress={() => setShowDetails(!showDetails)}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        marginLeft: 10,
+                        width: '50%',
+                        alignSelf: 'center',
+                      }}>
+                      Sowing Details
+                    </Text>
+
+                    <AntDesign
+                      name={'down'}
+                      size={20}
+                      color="#B21B1D"
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        marginRight: 10,
+                      }}
+                    />
+                  </TouchableOpacity>
+
+                  {/* {showDetails && ( */}
+                  <View
+                    style={{
+                      marginTop: 10,
+                      flexDirection: 'column',
+                      marginLeft: 10,
+                    }}>
+                    {/* put datepicker inside textinput*/}
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (shouldShowShowing) {
+                          setShowDatePicker(true);
+                        }
+                      }}>
+                      <TextInput
+                        label="Date of Sowing"
+                        variant="standard"
+                        value={
+                          // convert date to string
+                          showingDate.getDate() +
+                          '/' +
+                          (showingDate.getMonth() + 1) +
+                          '/' +
+                          showingDate.getFullYear()
+                        }
                         style={{
-                            marginTop: 20,
-                            alignSelf: 'flex-end',
-                            padding: 10,
+                          marginTop: 10,
+                        }}
+                        editable={shouldShowShowing}
+                        // icon on right side of text input
+                        trailing={
+                          <FontAwesome5
+                            name="calendar-alt"
+                            size={20}
+                            color="#B21B1D"
+                          />
+                        }
+                      />
+                    </TouchableOpacity>
+
+                    <TextInput
+                      label="Sowing Duration (In Days)"
+                      variant="standard"
+                      style={{
+                        marginTop: 10,
+                      }}
+                      value={String(showingData.sowingDuration) || ''}
+                      onChangeText={text => {
+                        setShowingData({
+                          ...showingData,
+                          sowingDuration: Number(text),
+                        });
+                      }}
+                      editable={shouldShowShowing}
+                    />
+                    {/* put datepicker inside textinput*/}
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (shouldShowShowing) {
+                          setShowHarvestingDatePicker(true);
+                        }
+                      }}>
+                      <TextInput
+                        label="Expected Harvesting Date"
+                        variant="standard"
+                        style={{
+                          marginTop: 10,
+                        }}
+                        value={
+                          // convert date to string
+                          harvestingDate.getDate() +
+                          '/' +
+                          (harvestingDate.getMonth() + 1) +
+                          '/' +
+                          harvestingDate.getFullYear()
+                        }
+                        editable={shouldShowShowing}
+                        // icon on right side of text input
+                        trailing={
+                          <FontAwesome5
+                            name="calendar-alt"
+                            size={20}
+                            color="#B21B1D"
+                          />
+                        }
+                      />
+                    </TouchableOpacity>
+                    <TextInput
+                      label="Grain Type"
+                      variant="standard"
+                      style={{
+                        marginTop: 10,
+                      }}
+                      value={String(showingData.grainType) || ''}
+                      onChangeText={text => {
+                        setShowingData({...showingData, grainType: text});
+                      }}
+                      editable={shouldShowShowing}
+                    />
+                    {showDetails && shouldShowShowing && landId && (
+                      <Stack
+                        style={{
+                          width: '100%',
+                          marginTop: 30,
+                          justifyContent: 'space-between',
+                        }}
+                        direction="row">
+                        <Button
+                          mode="contained"
+                          title="Cancel"
+                          style={{
+                            width: '40%',
                             backgroundColor: '#B21B1D',
-                            // make it round
-                            borderRadius: 50,
-                        }}
-                    >
-                        {/* Show only month and year like July 2022 */}
-                        <Text style={{
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                            color: '#fff',
-                        }}>{collectionCycle}</Text>
-                    </View>
-                    
+                            marginTop: 10,
+                          }}
+                          onPress={() => navigation.goBack()}></Button>
+                        <Button
+                          mode="contained"
+                          title="Save"
+                          style={{
+                            width: '40%',
+                            backgroundColor: '#B21B1D',
+                            marginTop: 10,
+                          }}
+                          onPress={() => {
+                            // Check if user have Permission for this action
+                            const {accessUserRole} = JSON.parse(profile);
+                            try {
+                              checkAuth(accessUserRole, 'FARMERUPDATE');
+                              console.log(
+                                showingData,
+                                'submiiiiiiiiiiiiiiiiiiiiiiitttttttttt',
+                              );
+                              // return
+                              // save data to database
+                              Axios.post('/landCollectionDetails', showingData)
+                                .then(response => {
+                                  console.log(response.data);
+                                  if (landId) {
+                                    // AsyncStorage.getItem('landCollectionDetails'+landId)
+                                    // .then((data) => {
+                                    // var dataInAsyncStorage = JSON.parse(data);
+                                    // if (dataInAsyncStorage) {
+                                    //     // remove the old item
+                                    //     AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify(showingData));
+                                    // } else {
+                                    //     AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify([showingData]));
+                                    // }
+                                    // Alert.alert('Success', 'Data saved successfully');
+                                    // })
+                                    // .catch((error) => {
+                                    // console.log(error);
+                                    // AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify(showingData));
+                                    Alert.alert(
+                                      'Success',
+                                      'Data saved successfully',
+                                    );
+                                    // });
+                                  } else {
+                                    // AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify([showingData]));
+                                    Alert.alert(
+                                      'Success',
+                                      'Data saved successfully',
+                                    );
+                                  }
+                                  navigation.goBack();
+                                })
+                                .catch(error => {
+                                  console.log(
+                                    error,
+                                    'errrorrrrrrrrrrrrrrrrrrrrrrrrr',
+                                  );
+                                });
+                            } catch (err) {
+                              alert(err.message);
+                            }
+                          }}></Button>
+                      </Stack>
+                    )}
+                  </View>
+                </View>
+              </>
+            )}
+            <View
+              style={{
+                marginTop: 30,
+                flexDirection: 'column',
+              }}>
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  position: 'relative',
+                }}
+                onPress={() =>
+                  setShowHarvestingDetails(!showHarvestingDetails)
+                }>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#000000',
+                    marginLeft: 10,
+                    width: '50%',
+                    alignSelf: 'center',
+                  }}>
+                  Harvesting Details
+                </Text>
+                <AntDesign
+                  name={!showHarvestingDetails ? 'down' : 'up'}
+                  size={20}
+                  color="#B21B1D"
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginRight: 10,
+                  }}
+                />
+              </TouchableOpacity>
 
+              {showHarvestingDetails &&
+                (shouldShowShowing ? (
+                  <View
+                    style={{
+                      marginTop: 10,
+                      flexDirection: 'column',
+                      height: 150,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {/* show big start icon */}
                     <View
+                      style={{
+                        marginTop: 10,
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        // make the view fadeit
+                        opacity: 0.5,
+                      }}>
+                      <FontAwesome5
+                        name="power-off"
+                        size={50}
+                        color="#B21B1D"
+                      />
+                      <Text
                         style={{
-                            marginTop: 20,
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: 'row',
-                                position: 'relative',
-                            }}
-                            // onPress={() => setShowDetails(!showDetails)}
-                        >
-                            <Text style={{
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                color: '#000000',
-                                marginLeft: 10,
-                                width: '50%',
-                                alignSelf: 'center',
-                            }}>Sowing Details</Text>
-
-                            <AntDesign name={"down"} size={20} color="#B21B1D" style={{
-                                position: 'absolute',
-                                right: 0,
-                                marginRight: 10,
-                            }} />
-                        </TouchableOpacity>
-
-                        {/* {showDetails && ( */}
-                            <View
-                                style={{
-                                    marginTop: 10,
-                                    flexDirection: 'column',
-                                    marginLeft: 10,
-                                }}
-                            >
-                                {/* put datepicker inside textinput*/}
-                                <TouchableOpacity
-                                onPress={() => {
-                                    if (shouldShowShowing) {
-                                    setShowDatePicker(true)}
-                                }
-                                }
-                                >
-                                <TextInput
-                                    label="Date of Sowing"
-                                    variant="standard"
-                                    value={
-                                        // convert date to string
-                                        showingDate.getDate() + '/' + (showingDate.getMonth() + 1) + '/' + showingDate.getFullYear()
-                                    }
-                                    style={{
-                                        marginTop: 10,
-                                    }}
-                                    editable={shouldShowShowing}
-                                    // icon on right side of text input
-                                    trailing={
-                                        <FontAwesome5 name="calendar-alt" size={20} color="#B21B1D" />
-                                    }
-                                />
-                                </TouchableOpacity>
-
-                                <TextInput
-                                    label="Sowing Duration (In Days)"
-                                    variant="standard"
-                                    style={{
-                                        marginTop: 10,
-                                    }}
-                                    value={String(showingData.sowingDuration) || ''}
-                                    onChangeText={(text) => {
-                                        setShowingData({...showingData, sowingDuration: Number(text)});
-                                    }}
-                                    editable={shouldShowShowing}
-                                />
-                                {/* put datepicker inside textinput*/}
-                                <TouchableOpacity
-                                onPress={() => {
-                                    if (shouldShowShowing) {
-                                        setShowHarvestingDatePicker(true)
-                                    }
-                                }}
-                                >
-                                <TextInput
-                                    label="Expected Harvesting Date"
-                                    variant="standard"
-                                    style={{
-                                        marginTop: 10,
-                                    }}
-                                    value={
-                                        // convert date to string
-                                        harvestingDate.getDate() + '/' + (harvestingDate.getMonth() + 1) + '/' + harvestingDate.getFullYear()
-                                    }
-                                    editable={shouldShowShowing}
-                                    // icon on right side of text input
-                                    trailing={
-                                        <FontAwesome5 name="calendar-alt" size={20} color="#B21B1D" />
-                                    }
-                                />
-                                </TouchableOpacity>
-                                <TextInput
-                                    label="Grain Type"
-                                    variant="standard"
-                                    style={{
-                                        marginTop: 10,
-                                    }}
-                                    value={String(showingData.grainType) || ''}
-                                    onChangeText={(text) => {
-                                        setShowingData({...showingData, grainType: text});
-                                    }
-                                    }
-                                    editable={shouldShowShowing}
-                                />
-                                {showDetails && shouldShowShowing && landId &&(
-
-                                    <Stack style={{ width: '100%', marginTop: 30, justifyContent: 'space-between' }} direction="row">
-                                        <Button
-                                            mode="contained"
-                                            title="Cancel"
-                                            style={{
-                                                width: '40%',
-                                                backgroundColor: '#B21B1D',
-                                                marginTop: 10,
-                                            }}
-                                            onPress={() => navigation.goBack()}
-                                        >
-                                        </Button>
-                                        <Button
-                                            mode="contained"
-                                            title="Save"
-                                            style={{
-                                                width: '40%',
-                                                backgroundColor: '#B21B1D',
-                                                marginTop: 10,
-                                            }}
-                                            onPress={() => {
-                                                // Check if user have Permission for this action 
-                                                const {accessUserRole} =JSON.parse(profile)
-                                                try{
-                                                    checkAuth(accessUserRole,'FARMERUPDATE')
-                                                    console.log(showingData,'submiiiiiiiiiiiiiiiiiiiiiiitttttttttt')
-                                                // return
-                                                // save data to database
-                                                Axios.post('/landCollectionDetails', showingData)
-                                                .then((response) => {
-                                                    console.log(response.data);
-                                                    if(landId){
-                                                        // AsyncStorage.getItem('landCollectionDetails'+landId)
-                                                        // .then((data) => {
-                                                        // var dataInAsyncStorage = JSON.parse(data);
-                                                        // if (dataInAsyncStorage) {
-                                                        //     // remove the old item
-                                                        //     AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify(showingData));
-                                                        // } else {
-                                                        //     AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify([showingData]));
-                                                        // }
-                                                        // Alert.alert('Success', 'Data saved successfully');
-                                                        // })
-                                                        // .catch((error) => {
-                                                        // console.log(error);
-                                                        // AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify(showingData));
-                                                        Alert.alert('Success', 'Data saved successfully');
-                                                        // });
-                                                    }
-                                                    else{
-                                                        // AsyncStorage.setItem('landCollectionDetails'+landId, JSON.stringify([showingData]));
-                                                        Alert.alert('Success', 'Data saved successfully');
-                                                    }
-                                                    navigation.goBack();
-                                                })
-                                                .catch((error) => {
-                                                    console.log(error,'errrorrrrrrrrrrrrrrrrrrrrrrrrr');
-                                                }
-                                                );
-                                                }catch(err){
-                                                    alert(err.message)
-                                                }
-                                                
-                                            }
-                                            }
-                                        >
-                                        </Button>
-                                        </Stack>
-                                    )}
-                        
-                            </View>
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#000000',
+                          marginTop: 10,
+                        }}>
+                        Start
+                      </Text>
                     </View>
-                    </>
-                    }
+                  </View>
+                ) : (
+                  <HarvestingSub
+                    navigation={navigation}
+                    completeharvesterdetails={completeharvesterdetails}
+                    profile={profile}
+                    landDetails={landDetails}
+                    farmerId={farmerId}
+                    collectionCycle={collectionCycle}
+                  />
+                ))}
+            </View>
+
+            <View
+              style={{
+                marginTop: 30,
+                flexDirection: 'column',
+              }}>
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  position: 'relative',
+                }}
+                onPress={() =>
+                  setShowRawMaterialDetails(!showRawMaterialDetails)
+                }>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#000000',
+                    marginLeft: 10,
+                    width: '100%',
+                    alignSelf: 'center',
+                  }}>
+                  Raw Material Details
+                </Text>
+
+                <AntDesign
+                  name={!showRawMaterialDetails ? 'down' : 'up'}
+                  size={20}
+                  color="#B21B1D"
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginRight: 10,
+                  }}
+                />
+              </TouchableOpacity>
+
+              {showRawMaterialDetails &&
+                (!completeharvesterdetails?.actualHarvestingEndDate ? (
+                  <View
+                    style={{
+                      marginTop: 10,
+                      flexDirection: 'column',
+                      height: 150,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    {/* show big start icon */}
                     <View
+                      style={{
+                        marginTop: 10,
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        // make the view fadeit
+                        opacity: 0.5,
+                      }}>
+                      <FontAwesome5
+                        name="power-off"
+                        size={50}
+                        color="#B21B1D"
+                      />
+                      <Text
                         style={{
-                            marginTop: 30,
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: 'row',
-                                position: 'relative',
-                            }}
-                            onPress={() => setShowHarvestingDetails(!showHarvestingDetails)}
-                        >
-                            <Text style={{
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                color: '#000000',
-                                marginLeft: 10,
-                                width: '50%',
-                                alignSelf: 'center',
-                            }}>Harvesting Details</Text>
-                            <AntDesign name={!showHarvestingDetails ? "down" : "up"} size={20} color="#B21B1D" style={{
-                                position: 'absolute',
-                                right: 0,
-                                marginRight: 10,
-                            }} />
-                            
-                        </TouchableOpacity>
-
-                        {showHarvestingDetails && (
-                            shouldShowShowing ? 
-                                <View
-                                    style={{
-                                        marginTop: 10,
-                                        flexDirection: 'column',
-                                        height: 150,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-
-                                    {/* show big start icon */}
-                                    <View
-                                        style={{
-                                            marginTop: 10,
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            alignSelf: 'center',
-                                            // make the view fadeit
-                                            opacity: 0.5,
-                                        }}
-                                    >
-                                        <FontAwesome5 name="power-off" size={50} color="#B21B1D" />
-                                        <Text style={{
-                                            fontSize: 16,
-                                            fontWeight: 'bold',
-                                            color: '#000000',
-                                            marginTop: 10,
-                                        }}>Start</Text>
-
-                                    </View>
-                                
-
-                                </View>
-                            :
-                                <HarvestingSub navigation={navigation} completeharvesterdetails={completeharvesterdetails} profile={profile} landDetails={landDetails} farmerId={farmerId} collectionCycle={collectionCycle}/>
-                            
-                        )}
-
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#000000',
+                          marginTop: 10,
+                        }}>
+                        Start
+                      </Text>
                     </View>
-
-                    <View
-                        style={{
-                            marginTop: 30,
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: 'row',
-                                position: 'relative',
-                            }}
-                            onPress={() => setShowRawMaterialDetails(!showRawMaterialDetails)}
-                        >
-                            <Text style={{
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                color: '#000000',
-                                marginLeft: 10,
-                                width: '100%',
-                                alignSelf: 'center',
-                            }}>Raw Material Details</Text>
-
-                            <AntDesign name={!showRawMaterialDetails ? "down" : "up"} size={20} color="#B21B1D" style={{
-                                position: 'absolute',
-                                right: 0,
-                                marginRight: 10,
-                            }} />
-                        </TouchableOpacity>
-
-                        {showRawMaterialDetails && (
-                            !completeharvesterdetails?.actualHarvestingEndDate ? 
-                                <View
-                                    style={{
-                                        marginTop: 10,
-                                        flexDirection: 'column',
-                                        height: 150,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    {/* show big start icon */}
-                                    <View
-                                        style={{
-                                            marginTop: 10,
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            alignSelf: 'center',
-                                            // make the view fadeit
-                                            opacity: 0.5,
-                                        }}
-                                    >
-                                        <FontAwesome5 name="power-off" size={50} color="#B21B1D" />
-                                        <Text style={{
-                                            fontSize: 16,
-                                            fontWeight: 'bold',
-                                            color: '#000000',
-                                            marginTop: 10,
-                                        }}>Start</Text>
-
-                                    </View>
-                                
-
-                                </View>
-                            :
-                            <RawMaterialSub navigation={navigation} completeharvesterdetails={completeharvesterdetails} profile={profile} landDetails={landDetails} farmerId={farmerId} collectionCycle={collectionCycle}/>
-                        )}
-
-                    </View>
-                    
-                   
-                </Stack>
-
-
+                  </View>
+                ) : (
+                  <RawMaterialSub
+                    navigation={navigation}
+                    completeharvesterdetails={completeharvesterdetails}
+                    profile={profile}
+                    landDetails={landDetails}
+                    farmerId={farmerId}
+                    collectionCycle={collectionCycle}
+                  />
+                ))}
+            </View>
+          </Stack>
         </View>
-        </ScrollView>
-      </View>
-    );
+      </ScrollView>
+    </View>
+  );
 }

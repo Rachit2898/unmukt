@@ -243,7 +243,9 @@ export default function Farmers({navigation}) {
           try {
             const {accessUserRole} = JSON.parse(profile);
             checkAuth(accessUserRole, 'FARMERUPDATE');
-            // navigation.navigate('AddFarmer', {refreshFarmerList: refreshFarmerList});
+            navigation.navigate('AddFarmer', {
+              refreshFarmerList: refreshFarmerList,
+            });
           } catch (err) {
             alert(err.message);
           }

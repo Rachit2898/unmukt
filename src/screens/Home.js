@@ -293,7 +293,9 @@ export default function Home() {
           flexDirection: 'column',
           width: '100%',
         }}>
-        <WeatherCard />
+        <View style={{marginHorizontal: 10, borderRadius: 5}}>
+          <WeatherCard />
+        </View>
 
         <View
           style={{

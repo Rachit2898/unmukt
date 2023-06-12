@@ -13,6 +13,7 @@ import {
   Linking,
   Dimensions,
   StyleSheet,
+  Modal,
 } from 'react-native';
 import {Axios} from '../core/axios';
 import {checkAuth} from '../Helper';
@@ -20,6 +21,8 @@ import {checkAuth} from '../Helper';
 const HarvesterDailyRecord = ({navigation, route}) => {
   const {harvesterList, collectionCycle, profile} = route?.params;
   const [selectedHarvester, setSelectedHarvester] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(selectedHarvester);
   const [selectedHarvesterReading, setSelectedHarvesterReading] = useState('');
   const [inputValues, setInputValues] = useState({
     harvestingInAcres: '',
@@ -28,6 +31,19 @@ const HarvesterDailyRecord = ({navigation, route}) => {
     breakdownTimeInHours: '',
   });
   const current_date = new Date().toISOString().slice(0, 10);
+
+  const handlePickerChange = (itemValue, itemIndex) => {
+    setSelectedValue(itemValue);
+    setSelectedHarvester(itemValue);
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+  };
+
+  const handleModalOpen = () => {
+    setModalVisible(true);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -72,6 +88,7 @@ const HarvesterDailyRecord = ({navigation, route}) => {
 
   const SubmitReading = () => {
     // Check if user have Permission for this action
+    console.log({selectedHarvester});
     const {accessUserRole} = profile;
     try {
       checkAuth(accessUserRole, 'HARVESTINGUPDATE');
@@ -177,25 +194,57 @@ const HarvesterDailyRecord = ({navigation, route}) => {
         <Text style={styles.text}>Harvestor Daily Record</Text>
         <Text style={styles.text2}>({current_date})</Text>
       </View>
+      <TouchableOpacity style={styles.pickerButton} onPress={handleModalOpen}>
+        <Text style={styles.pickerButtonText}>
+          {selectedValue ? `Selected: ${selectedValue}` : 'Select Harvester'}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.line}></View>
-      <Picker
-        selectedValue={selectedHarvester}
-        style={{height: 50, marginTop: 10, borderWidth: 2, borderColor: 'red'}}
-        onValueChange={(itemValue, itemIndex) => {
-          setSelectedHarvester(itemValue);
-        }}>
-        {harvesterList?.map((prop, key) => {
-          return (
-            <Picker.Item
-              label={`${prop.modelName} ${prop.engineNumber} ${
-                prop?.registrationNumber ? prop?.registrationNumber : ''
-              }`}
-              value={prop.id}
-              key={key}
-            />
-          );
-        })}
-      </Picker>
+      <TouchableOpacity
+        style={styles.modalBackground}
+        activeOpacity={1}
+        onPress={handleModalClose}>
+        <Modal visible={modalVisible} animationType="fade" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View
+              style={{
+                shadowColor: '#000',
+
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+                borderRadius: 5,
+                backgroundColor: '#595857',
+                opacity: 9999,
+              }}>
+              {harvesterList?.map((prop, key) => (
+                <TouchableOpacity
+                  key={key}
+                  style={styles.modalItem}
+                  onPress={() => {
+                    handlePickerChange(prop.id);
+                    handleModalClose();
+                  }}>
+                  <Text style={styles.modalItemText}>
+                    {`${prop.modelName} ${prop.engineNumber} ${
+                      prop?.registrationNumber ? prop?.registrationNumber : ''
+                    }`}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity
+                style={styles.modalCancelButton}
+                onPress={handleModalClose}>
+                <Text style={styles.modalCancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </TouchableOpacity>
       <View style={styles.inputContainer}>
         <TextInput
           label="Start Reading"
@@ -269,6 +318,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%',
     paddingHorizontal: 20,
+
+    flex: 1,
   },
   line: {
     borderBottomWidth: 1,
@@ -309,5 +360,44 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingHorizontal: 30,
     justifyContent: 'space-between',
+  },
+
+  pickerButton: {
+    height: 50,
+    borderWidth: 2,
+    borderColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pickerButtonText: {
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalItem: {
+    padding: 10,
+  },
+  modalItemText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalCancelButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  modalCancelButtonText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '800',
   },
 });

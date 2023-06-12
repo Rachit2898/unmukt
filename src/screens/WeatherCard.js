@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
+    borderRadius: 5,
   },
   leftSection: {
     justifyContent: 'center',
