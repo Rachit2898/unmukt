@@ -81,10 +81,7 @@ export default function Farmers({navigation}) {
       Axios.get(`/farmer/${index}/500`)
         .then(function (response) {
           // check if response is 200
-          console.log(
-            response,
-            'farmer fetchedsdddddddddddddddddddddddddddddddddddddd',
-          );
+
           if (response.status !== 200) {
             alert('Error fetching farmers');
             setRefreshing(false);
@@ -168,12 +165,12 @@ export default function Farmers({navigation}) {
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'center',
-          width: '80%',
-          marginTop: 10,
-          marginLeft: 20,
-          marginRight: 20,
           borderRadius: 10,
           backgroundColor: '#ffffff',
+          height: '7%',
+          marginVertical: 10,
+          borderWidth: 1,
+          borderColor: '#ececec',
         }}>
         <AntDesign
           name="search1"
@@ -182,7 +179,7 @@ export default function Farmers({navigation}) {
         />
         <TextInput
           style={{
-            width: '90%',
+            width: '85%',
             height: '100%',
             padding: 10,
           }}
@@ -194,9 +191,6 @@ export default function Farmers({navigation}) {
 
       {/* create a list of farmers */}
       <FlatList
-        style={{
-          marginTop: 10,
-        }}
         data={farmerList.filter(farmer => {
           if (search === '') {
             return true;
@@ -233,6 +227,7 @@ export default function Farmers({navigation}) {
           bottom: 20,
           right: 20,
           width: 50,
+
           height: 50,
           borderRadius: 50,
           backgroundColor: '#B21B1D',

@@ -13,6 +13,7 @@ import HarvesterShifting from '../screens/HarvesterShifting';
 import TactorDailyRecord from '../screens/TractorDailyRecord';
 import RawMaterialTrip from '../screens/RawMaterialTrip';
 import AcceptRawMaterial from '../screens/AcceptRawMaterial';
+import DummyFarmerLand from '../screens/DummyFarmers.js';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,7 @@ export default function TabRoutes() {
       <Stack.Screen name="TactorDailyRecord" component={TactorDailyRecord} />
       <Stack.Screen name="RawMaterialTrip" component={RawMaterialTrip} />
       <Stack.Screen name="AcceptRawMaterial" component={AcceptRawMaterial} />
+      <Stack.Screen name="DummyFarmerLand" component={DummyFarmerLand} />
     </Stack.Navigator>
   );
 }

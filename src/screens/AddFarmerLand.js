@@ -34,6 +34,31 @@ import axios from 'axios';
 import HarvestingSub from './CommanCompo/HarvestingSub';
 import RawMaterialSub from './CommanCompo/RawMaterialSub';
 import {checkAuth} from '../Helper';
+import upDown from '../assets/upDown.png';
+import dropDown from '../assets/dropDown.png';
+
+const BoldTextInput = ({
+  label,
+  value,
+  onChangeText,
+  isEditable,
+  style,
+  trailing,
+}) => {
+  return (
+    <View style={style}>
+      <Text style={{fontWeight: 'bold'}}>{label}</Text>
+      <TextInput
+        variant="standard"
+        style={{fontWeight: 'bold', marginTop: -10}}
+        editable={isEditable}
+        value={value}
+        onChangeText={onChangeText}
+        trailing={trailing}
+      />
+    </View>
+  );
+};
 
 export default function AddFarmerLand({navigation, route}) {
   const {
@@ -44,7 +69,7 @@ export default function AddFarmerLand({navigation, route}) {
     farmerName,
     redirect = false,
   } = route.params;
-  // console.log(landDetails)
+  console.log({farmerName});
   const [showPopup, setShowPopup] = useState(false);
   const [farmDetailsAdded, setfarmDetailsAdded] = useState(false);
   const [isEditable, setIsEditable] = useState(!isViewMode);
@@ -551,8 +576,7 @@ export default function AddFarmerLand({navigation, route}) {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'flex-start',
+        backgroundColor: '#ececec',
       }}>
       <>
         <DatePicker
@@ -596,380 +620,382 @@ export default function AddFarmerLand({navigation, route}) {
           }}
         />
       </>
-      <ScrollView
-        style={{
-          width: '100%',
-        }}>
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            marginTop: 10,
-          }}>
+      <ScrollView style={{margin: 10}}>
+        <View style={{backgroundColor: '#fff', padding: 10, borderRadius: 5}}>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: 'bold',
-              color: '#000000',
-              marginTop: 0,
-              width: '100%',
-              paddingLeft: 20,
+              fontSize: 25,
+              fontWeight: 'bold',
+              color: '#B21B1D',
+
               alignSelf: 'center',
               textAlign: 'center',
             }}>
             {farmerName}
           </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'column',
+            width: '100%',
+          }}>
           <View
             style={{
-              width: '100%',
-              height: 1,
-              backgroundColor: '#000000',
-              marginTop: 10,
-            }}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              width: '100%',
-              marginTop: 10,
-              position: 'relative',
+              flexDirection: 'column',
+              marginVertical: 10,
+              backgroundColor: '#fff',
+              padding: 10,
+              borderRadius: 5,
             }}>
-            <Text
+            <View
               style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: '#000000',
-                marginTop: 0,
-                width: '100%',
-                paddingLeft: 20,
-                alignSelf: 'flex-start',
+                flexDirection: 'row',
               }}>
-              Land Details
-            </Text>
-          </View>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: '#B21B1D',
+                }}>
+                Land Details
+              </Text>
+            </View>
 
-          <Stack
-            style={{
-              width: '100%',
-              paddingLeft: 20,
-              paddingRight: 20,
-              paddingBottom: 30,
-            }}>
-            {!redirect && (
-              <>
-                <TextInput
-                  label="Land Area Provided by Farmer (in acres)*"
-                  variant="standard"
-                  style={{
-                    marginTop: 20,
-                  }}
-                  keyboardType="numeric"
-                  editable={isEditable}
-                  value={String(jsonData.landSize) || ''}
-                  onChangeText={text => {
-                    setJsonData({
-                      ...jsonData,
-                      landSize: text,
-                      landUnit: 'acres',
-                    });
-                  }}
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    if (isEditable) {
-                      navigation.navigate('MapView', {
-                        polygonCoords,
-                        setMyPolygonCoords,
-                      });
-                    }
-                  }}
-                  style={{
-                    marginTop: 10,
-                  }}>
-                  <TextInput
-                    label="Automatic Area Calculated*"
+            <Stack style={{}}>
+              {!redirect && (
+                <>
+                  <BoldTextInput
+                    label="Land Area Provided by Farmer (in acres)*"
                     variant="standard"
-                    editable={false}
-                    value={String(areaCalculation) || ''}
-                    // icon on right side of text input
-                    trailing={
-                      <FontAwesome5
-                        name="map-marked-alt"
-                        size={20}
-                        color="#B21B1D"
-                      />
-                    }
-                  />
-                </TouchableOpacity>
-                {isViewMode && polygonCoords && polygonCoords.length > 0 && (
-                  <MapView
-                    style={{width: '100%', height: 200}}
-                    region={{
-                      latitude:
-                        polygonCoords.length > 0
-                          ? polygonCoords[0].latitude
-                          : 0,
-                      longitude:
-                        polygonCoords.length > 0
-                          ? polygonCoords[0].longitude
-                          : 0,
-                      // zoom level based on the area of the polygon
-                      latitudeDelta: 0.005,
-                      longitudeDelta: 0.005,
+                    style={{
+                      marginTop: 20,
                     }}
-                    mapType="satellite"
-                    zoomEnabled={true}>
-                    {polygonCoords.length > 0 && (
-                      <Polygon coordinates={polygonCoords} />
-                    )}
-                  </MapView>
-                )}
+                    keyboardType="numeric"
+                    editable={isEditable}
+                    value={String(jsonData.landSize) || ''}
+                    onChangeText={text => {
+                      setJsonData({
+                        ...jsonData,
+                        landSize: text,
+                        landUnit: 'acres',
+                      });
+                    }}
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (isEditable) {
+                        navigation.navigate('MapView', {
+                          polygonCoords,
+                          setMyPolygonCoords,
+                        });
+                      }
+                    }}
+                    style={{
+                      marginTop: 10,
+                    }}>
+                    <BoldTextInput
+                      label="Automatic Area Calculated*"
+                      variant="standard"
+                      editable={false}
+                      value={String(areaCalculation) || ''}
+                      // icon on right side of text input
+                      trailing={
+                        <FontAwesome5
+                          name="map-marked-alt"
+                          size={20}
+                          color="#B21B1D"
+                        />
+                      }
+                    />
+                  </TouchableOpacity>
+                  {isViewMode && polygonCoords && polygonCoords.length > 0 && (
+                    <MapView
+                      style={{width: '100%', height: 200}}
+                      region={{
+                        latitude:
+                          polygonCoords.length > 0
+                            ? polygonCoords[0].latitude
+                            : 0,
+                        longitude:
+                          polygonCoords.length > 0
+                            ? polygonCoords[0].longitude
+                            : 0,
+                        // zoom level based on the area of the polygon
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                      }}
+                      mapType="satellite"
+                      zoomEnabled={true}>
+                      {polygonCoords.length > 0 && (
+                        <Polygon coordinates={polygonCoords} />
+                      )}
+                    </MapView>
+                  )}
 
-                {isEditable ? (
-                  <>
+                  {isEditable ? (
+                    <>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: '#000000',
+                          marginTop: 10,
+                          width: '90%',
+                        }}>
+                        Catchment Area*
+                      </Text>
+
+                      <Picker
+                        selectedValue={selectedCatchementArea}
+                        style={{height: 50, width: '90%', marginTop: 10}}
+                        onValueChange={(itemValue, itemIndex) => {
+                          setSelectedCatchementArea(itemValue);
+                          setJsonData({
+                            ...jsonData,
+                            landCatchmentId: itemValue,
+                          });
+                        }}>
+                        {catchementAreaList.map((item, index) => {
+                          return (
+                            <Picker.Item
+                              label={item.name}
+                              value={item.id}
+                              key={index}
+                            />
+                          );
+                        })}
+                      </Picker>
+                    </>
+                  ) : (
+                    <BoldTextInput
+                      label="Catchment Area"
+                      variant="standard"
+                      style={{
+                        marginTop: 10,
+                      }}
+                      value={landDetails.catchmentName}
+                      editable={isEditable}
+                      trailing={
+                        isEditable ? (
+                          <Image
+                            style={{
+                              position: 'absolute',
+                              right: 0,
+                              marginRight: 10,
+                              height: 20,
+                              width: 20,
+                            }}
+                            source={dropDown}
+                          />
+                        ) : null
+                      }
+                    />
+                  )}
+
+                  <BoldTextInput
+                    label="Survey No/Plot No."
+                    variant="standard"
+                    style={{
+                      marginTop: 20,
+                    }}
+                    editable={isEditable}
+                    value={jsonData.plotNumOrSurveyNum}
+                    onChangeText={text => {
+                      setJsonData({...jsonData, plotNumOrSurveyNum: text});
+                    }}
+                  />
+                  <BoldTextInput
+                    label="Landmark"
+                    variant="standard"
+                    style={{
+                      marginTop: 10,
+                    }}
+                    value={jsonData.landmark}
+                    editable={isEditable}
+                    onChangeText={text => {
+                      setJsonData({...jsonData, landmark: text});
+                    }}
+                  />
+                  <Stack style={{width: '100%', marginTop: 10}} direction="row">
                     <Text
                       style={{
                         fontSize: 16,
+                        fontWeight: 'bold',
                         color: '#000000',
-                        marginTop: 10,
-                        width: '90%',
+
+                        width: '50%',
+                        alignSelf: 'center',
                       }}>
-                      Catchment Area*
+                      Harvesting Plan*
                     </Text>
 
-                    <Picker
-                      selectedValue={selectedCatchementArea}
-                      style={{height: 50, width: '90%', marginTop: 10}}
-                      onValueChange={(itemValue, itemIndex) => {
-                        setSelectedCatchementArea(itemValue);
-                        setJsonData({...jsonData, landCatchmentId: itemValue});
+                    <SwitchSelector
+                      options={harvestingPlanOptions}
+                      initial={
+                        !isEditable
+                          ? landDetails.harvestingPlan === 'HARVESTER'
+                            ? 0
+                            : 1
+                          : jsonData.harvestingPlan === 'HARVESTER'
+                          ? 0
+                          : 1
+                      }
+                      onPress={value =>
+                        setJsonData({...jsonData, harvestingPlan: value})
+                      }
+                      style={{
+                        marginTop: 10,
+                        width: '50%',
+                      }}
+                      disabled={!isEditable}
+                    />
+                  </Stack>
+                  <Stack style={{width: '100%', marginTop: 10}} direction="row">
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#000000',
+
+                        width: '50%',
+                        alignSelf: 'center',
                       }}>
-                      {catchementAreaList.map((item, index) => {
-                        return (
-                          <Picker.Item
-                            label={item.name}
-                            value={item.id}
-                            key={index}
-                          />
-                        );
-                      })}
-                    </Picker>
-                  </>
-                ) : (
-                  <TextInput
-                    label="Catchment Area"
+                      Land Ownership*
+                    </Text>
+
+                    <SwitchSelector
+                      options={landOwnerOptions}
+                      initial={
+                        !isEditable
+                          ? landDetails.landOwnership === 'FARMEROWNED'
+                            ? 0
+                            : 1
+                          : jsonData.landOwnership === 'FARMEROWNED'
+                          ? 0
+                          : 1
+                      }
+                      onPress={value =>
+                        setJsonData({...jsonData, landOwnership: value})
+                      }
+                      style={{
+                        marginTop: 10,
+                        width: '50%',
+                      }}
+                      disabled={!isEditable}
+                    />
+                  </Stack>
+                  <Stack style={{width: '100%', marginTop: 10}} direction="row">
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#000000',
+
+                        width: '50%',
+                        alignSelf: 'center',
+                      }}>
+                      Reaper Needed*
+                    </Text>
+
+                    <SwitchSelector
+                      options={options}
+                      initial={
+                        !isEditable
+                          ? landDetails.reaperNeeded === true
+                            ? 0
+                            : 1
+                          : jsonData.reaperNeeded === true
+                          ? 0
+                          : 1
+                      }
+                      onPress={value =>
+                        setJsonData({
+                          ...jsonData,
+                          reaperNeeded: value === 'Yes' ? true : false,
+                        })
+                      }
+                      style={{
+                        marginTop: 10,
+                        width: '50%',
+                      }}
+                      disabled={!isEditable}
+                    />
+                  </Stack>
+                  {!redirect && !isEditable && (
+                    <TouchableOpacity
+                      style={{
+                        marginTop: 10,
+                        alignSelf: 'flex-end',
+                        padding: 10,
+                        backgroundColor: '#B21B1D',
+                        // make it round
+                        borderRadius: 50,
+                      }}
+                      onPress={() => {
+                        setIsEditable(!isEditable);
+                        setShowDetails(true);
+                      }}>
+                      <AntDesign name="edit" size={25} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
+                  <BoldTextInput
+                    label="Distance From Water Source (In Meters)"
                     variant="standard"
                     style={{
-                      marginTop: 10,
+                      marginTop: 20,
                     }}
-                    value={landDetails.catchmentName}
+                    // only numbers
+                    keyboardType="numeric"
+                    value={String(jsonData.distanceToWaterSource) || ''}
                     editable={isEditable}
-                    trailing={
-                      isEditable ? (
-                        <AntDesign name="down" size={20} color="#000000" />
-                      ) : null
-                    }
-                  />
-                )}
-
-                <TextInput
-                  label="Survey No/Plot No."
-                  variant="standard"
-                  style={{
-                    marginTop: 20,
-                  }}
-                  editable={isEditable}
-                  value={jsonData.plotNumOrSurveyNum}
-                  onChangeText={text => {
-                    setJsonData({...jsonData, plotNumOrSurveyNum: text});
-                  }}
-                />
-                <TextInput
-                  label="Landmark"
-                  variant="standard"
-                  style={{
-                    marginTop: 10,
-                  }}
-                  value={jsonData.landmark}
-                  editable={isEditable}
-                  onChangeText={text => {
-                    setJsonData({...jsonData, landmark: text});
-                  }}
-                />
-                <Stack style={{width: '100%', marginTop: 10}} direction="row">
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      color: '#000000',
-                      marginLeft: 10,
-                      width: '50%',
-                      alignSelf: 'center',
-                    }}>
-                    Harvesting Plan*
-                  </Text>
-
-                  <SwitchSelector
-                    options={harvestingPlanOptions}
-                    initial={
-                      !isEditable
-                        ? landDetails.harvestingPlan === 'HARVESTER'
-                          ? 0
-                          : 1
-                        : jsonData.harvestingPlan === 'HARVESTER'
-                        ? 0
-                        : 1
-                    }
-                    onPress={value =>
-                      setJsonData({...jsonData, harvestingPlan: value})
-                    }
-                    style={{
-                      marginTop: 10,
-                      width: '50%',
-                    }}
-                    disabled={!isEditable}
-                  />
-                </Stack>
-                <Stack style={{width: '100%', marginTop: 10}} direction="row">
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      color: '#000000',
-                      marginLeft: 10,
-                      width: '50%',
-                      alignSelf: 'center',
-                    }}>
-                    Land Ownership*
-                  </Text>
-
-                  <SwitchSelector
-                    options={landOwnerOptions}
-                    initial={
-                      !isEditable
-                        ? landDetails.landOwnership === 'FARMEROWNED'
-                          ? 0
-                          : 1
-                        : jsonData.landOwnership === 'FARMEROWNED'
-                        ? 0
-                        : 1
-                    }
-                    onPress={value =>
-                      setJsonData({...jsonData, landOwnership: value})
-                    }
-                    style={{
-                      marginTop: 10,
-                      width: '50%',
-                    }}
-                    disabled={!isEditable}
-                  />
-                </Stack>
-                <Stack style={{width: '100%', marginTop: 10}} direction="row">
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      color: '#000000',
-                      marginLeft: 10,
-                      width: '50%',
-                      alignSelf: 'center',
-                    }}>
-                    Reaper Needed*
-                  </Text>
-
-                  <SwitchSelector
-                    options={options}
-                    initial={
-                      !isEditable
-                        ? landDetails.reaperNeeded === true
-                          ? 0
-                          : 1
-                        : jsonData.reaperNeeded === true
-                        ? 0
-                        : 1
-                    }
-                    onPress={value =>
+                    onChangeText={text => {
                       setJsonData({
                         ...jsonData,
-                        reaperNeeded: value === 'Yes' ? true : false,
-                      })
-                    }
-                    style={{
-                      marginTop: 10,
-                      width: '50%',
+                        distanceToWaterSource: Number(text),
+                      });
                     }}
-                    disabled={!isEditable}
                   />
-                </Stack>
-                {!redirect && !isEditable && (
-                  <TouchableOpacity
+                </>
+              )}
+              {!redirect && isEditable && !farmDetailsAdded && (
+                <Stack
+                  style={{
+                    justifyContent: 'space-between',
+                  }}
+                  direction="row">
+                  <Button
+                    mode="contained"
+                    title="Discard"
                     style={{
-                      marginTop: 10,
-                      alignSelf: 'flex-end',
-                      padding: 10,
+                      width: '40%',
                       backgroundColor: '#B21B1D',
-                      // make it round
-                      borderRadius: 50,
+                      marginTop: 10,
                     }}
-                    onPress={() => {
-                      setIsEditable(!isEditable);
-                      setShowDetails(true);
-                    }}>
-                    <AntDesign name="edit" size={25} color="#FFFFFF" />
-                  </TouchableOpacity>
-                )}
-                <TextInput
-                  label="Distance From Water Source (In Meters)"
-                  variant="standard"
-                  style={{
-                    marginTop: 20,
-                  }}
-                  // only numbers
-                  keyboardType="numeric"
-                  value={String(jsonData.distanceToWaterSource) || ''}
-                  editable={isEditable}
-                  onChangeText={text => {
-                    setJsonData({
-                      ...jsonData,
-                      distanceToWaterSource: Number(text),
-                    });
-                  }}
-                />
-              </>
-            )}
-            {!redirect && isEditable && !farmDetailsAdded && (
-              <Stack
-                style={{
-                  width: '100%',
-                  marginTop: 30,
-                  justifyContent: 'space-between',
-                }}
-                direction="row">
-                <Button
-                  mode="contained"
-                  title="Discard"
-                  style={{
-                    width: '40%',
-                    backgroundColor: '#B21B1D',
-                    marginTop: 10,
-                  }}
-                  onPress={() => navigation.goBack()}></Button>
-                <Button
-                  mode="contained"
-                  title="Save"
-                  style={{
-                    width: '40%',
-                    backgroundColor: '#B21B1D',
-                    marginTop: 10,
-                  }}
-                  onPress={() =>
-                    !isViewMode ? submitLandDetails() : updateLandDetails()
-                  }></Button>
-              </Stack>
-            )}
-
+                    onPress={() => navigation.goBack()}></Button>
+                  <Button
+                    mode="contained"
+                    title="Save"
+                    style={{
+                      width: '40%',
+                      backgroundColor: '#B21B1D',
+                      marginTop: 10,
+                    }}
+                    onPress={() =>
+                      !isViewMode ? submitLandDetails() : updateLandDetails()
+                    }></Button>
+                </Stack>
+              )}
+            </Stack>
+          </View>
+          <View
+            View
+            style={{
+              flexDirection: 'column',
+              backgroundColor: '#fff',
+              padding: 10,
+              borderRadius: 5,
+            }}>
             {!redirect && (
               <>
                 <View
@@ -1006,26 +1032,24 @@ export default function AddFarmerLand({navigation, route}) {
                   >
                     <Text
                       style={{
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: 'bold',
-                        color: '#000000',
-                        marginLeft: 10,
+                        color: '#B21B1D',
                         width: '50%',
                         alignSelf: 'center',
                       }}>
                       Sowing Details
                     </Text>
 
-                    <AntDesign
-                      name={'down'}
-                      size={20}
-                      color="#B21B1D"
+                    <Image
                       style={{
                         position: 'absolute',
                         right: 0,
                         marginRight: 10,
+                        height: 20,
+                        width: 20,
                       }}
-                    />
+                      source={dropDown}></Image>
                   </TouchableOpacity>
 
                   {/* {showDetails && ( */}
@@ -1033,7 +1057,6 @@ export default function AddFarmerLand({navigation, route}) {
                     style={{
                       marginTop: 10,
                       flexDirection: 'column',
-                      marginLeft: 10,
                     }}>
                     {/* put datepicker inside textinput*/}
                     <TouchableOpacity
@@ -1042,7 +1065,7 @@ export default function AddFarmerLand({navigation, route}) {
                           setShowDatePicker(true);
                         }
                       }}>
-                      <TextInput
+                      <BoldTextInput
                         label="Date of Sowing"
                         variant="standard"
                         value={
@@ -1068,7 +1091,7 @@ export default function AddFarmerLand({navigation, route}) {
                       />
                     </TouchableOpacity>
 
-                    <TextInput
+                    <BoldTextInput
                       label="Sowing Duration (In Days)"
                       variant="standard"
                       style={{
@@ -1090,7 +1113,7 @@ export default function AddFarmerLand({navigation, route}) {
                           setShowHarvestingDatePicker(true);
                         }
                       }}>
-                      <TextInput
+                      <BoldTextInput
                         label="Expected Harvesting Date"
                         variant="standard"
                         style={{
@@ -1115,7 +1138,7 @@ export default function AddFarmerLand({navigation, route}) {
                         }
                       />
                     </TouchableOpacity>
-                    <TextInput
+                    <BoldTextInput
                       label="Grain Type"
                       variant="standard"
                       style={{
@@ -1130,8 +1153,6 @@ export default function AddFarmerLand({navigation, route}) {
                     {showDetails && shouldShowShowing && landId && (
                       <Stack
                         style={{
-                          width: '100%',
-                          marginTop: 30,
                           justifyContent: 'space-between',
                         }}
                         direction="row">
@@ -1229,22 +1250,35 @@ export default function AddFarmerLand({navigation, route}) {
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: '#000000',
-                    marginLeft: 10,
+
                     width: '50%',
                     alignSelf: 'center',
                   }}>
                   Harvesting Details
                 </Text>
-                <AntDesign
-                  name={!showHarvestingDetails ? 'down' : 'up'}
-                  size={20}
-                  color="#B21B1D"
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    marginRight: 10,
-                  }}
-                />
+                {!showHarvestingDetails ? (
+                  <Image
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      marginRight: 10,
+                      height: 20,
+                      width: 20,
+                    }}
+                    source={dropDown}
+                  />
+                ) : (
+                  <Image
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      marginRight: 10,
+                      height: 20,
+                      width: 20,
+                    }}
+                    source={upDown}
+                  />
+                )}
               </TouchableOpacity>
 
               {showHarvestingDetails &&
@@ -1313,23 +1347,35 @@ export default function AddFarmerLand({navigation, route}) {
                     fontSize: 16,
                     fontWeight: 'bold',
                     color: '#000000',
-                    marginLeft: 10,
-                    width: '100%',
+
                     alignSelf: 'center',
                   }}>
                   Raw Material Details
                 </Text>
 
-                <AntDesign
-                  name={!showRawMaterialDetails ? 'down' : 'up'}
-                  size={20}
-                  color="#B21B1D"
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    marginRight: 10,
-                  }}
-                />
+                {!showRawMaterialDetails ? (
+                  <Image
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      marginRight: 10,
+                      height: 20,
+                      width: 20,
+                    }}
+                    source={dropDown}
+                  />
+                ) : (
+                  <Image
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      marginRight: 10,
+                      height: 20,
+                      width: 20,
+                    }}
+                    source={upDown}
+                  />
+                )}
               </TouchableOpacity>
 
               {showRawMaterialDetails &&
@@ -1379,7 +1425,7 @@ export default function AddFarmerLand({navigation, route}) {
                   />
                 ))}
             </View>
-          </Stack>
+          </View>
         </View>
       </ScrollView>
     </View>

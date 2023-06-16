@@ -92,7 +92,7 @@ const Infra = ({navigation, route, ...props}) => {
     <SafeAreaView style={styles.container}>
       <View
         style={{
-          backgroundColor: '#D9D9D9',
+          backgroundColor: '#B21B1D',
           marginHorizontal: 10,
           borderRadius: 5,
         }}>
@@ -160,7 +160,7 @@ const Infra = ({navigation, route, ...props}) => {
       <View style={styles.line}></View>
       <View
         style={{
-          backgroundColor: '#D9D9D9',
+          backgroundColor: '#B21B1D',
           marginHorizontal: 10,
           borderRadius: 5,
         }}>
@@ -212,12 +212,12 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#fff',
     marginLeft: 10,
   },
   text2: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     marginLeft: 10,
   },
   dropdownIcon: {
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   dropdownItems: {
     paddingHorizontal: 30,
     paddingVertical: 10,
-    backgroundColor: '#B21B1D',
+    backgroundColor: '#D9D9D9',
     margin: 10,
     borderRadius: 5,
   },

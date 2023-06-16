@@ -12,46 +12,43 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Axios} from '../../core/axios';
 
+import FarmerProfile from '../../assets/user.png';
+
 export default function Farmer({navigation, item, refreshFarmerList}) {
   const [imageUri, setImageUri] = useState(null);
 
   useEffect(() => {
-    // fetch image
     // console.log(item.imageDetails);
     // if (item.imageDetails.id === null) {
-    //     return;
+    //   return;
     // }
     // // console.log(item.imageDetails);
     // // return
     // console.log(`/images/${item.imageDetails.id}`);
     // // return
     // Axios.get(`/images/${item.imageDetails.id}`)
-    // .then(async function (response) {
+    //   .then(async function (response) {
     //     // check if response is 200
     //     if (response.status !== 200) {
-    //         alert('Error fetching image');
-    //         return;
+    //       alert('Error fetching image');
+    //       return;
     //     }
-    //     console.log(response)
-    //     const objectURL = `data:image/png;base64,${response.data.image}`
+    //     console.log(response);
+    //     const objectURL = `data:image/png;base64,${response.data.image}`;
     //     setImageUri(objectURL);
-    // }
-    // )
-    // .catch(function (error) {
+    //   })
+    //   .catch(function (error) {
     //     console.log(JSON.stringify(error));
     //     console.log(error.response);
     //     alert('Error fetching image');
-    // }
-    // );
+    //   });
   }, []);
   return (
     <TouchableOpacity
       style={{
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: '#fff',
-        margin: 5,
+        marginVertical: 5,
         borderRadius: 5,
       }}
       onPress={() =>
@@ -60,15 +57,22 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
           refreshFarmerList: refreshFarmerList,
         })
       }>
-      <Image
-        source={{uri: imageUri}}
+      <View
         style={{
-          width: 100,
           height: 100,
-          resizeMode: 'contain',
+          width: 100,
           margin: 20,
-        }}
-      />
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Image
+          source={FarmerProfile}
+          style={{
+            width: 80,
+            height: 80,
+          }}
+        />
+      </View>
       <View
         style={{
           flexDirection: 'column',

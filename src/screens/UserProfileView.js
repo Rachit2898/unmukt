@@ -6,14 +6,18 @@ import {
   Image,
   Button,
   ImageBackground,
+  Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {isLogin} from '../Redux-Files/loginSlice';
+import {useNavigation} from '@react-navigation/native';
+import User from '../assets/user.png';
 
-export default function UserProfileView({navigation}) {
+export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState({});
   const [image, setImage] = useState('');
+  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,20 +30,16 @@ export default function UserProfileView({navigation}) {
   }, []);
 
   return (
-    <ImageBackground
-      source={require('../assets/icon.png')}
-      style={{flex: 1}}
-      resizeMode="cover">
+    <View style={{flex: 1}}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{
-          flex: 1,
           backgroundColor: '#fff',
           padding: 20,
         }}>
         <View style={{alignItems: 'center'}}>
           <Image
-            source={image}
+            source={User}
             onError={() => setImage(require('../assets/profile.png'))}
             style={{
               width: 100,
@@ -107,20 +107,38 @@ export default function UserProfileView({navigation}) {
 
         <View style={styles.separator} />
 
-        <View
-          style={{backgroundColor: '#B21B1D', borderRadius: 5, marginTop: 20}}>
-          <Button
-            title="Logout"
-            onPress={() => {
-              AsyncStorage.removeItem('profile');
-              AsyncStorage.removeItem('token');
-              dispatch(isLogin(false));
-            }}
-            color="#fff"
-          />
-        </View>
+        <Pressable
+          onPress={() => navigation.navigate('DummyFarmerLand')}
+          style={styles.infoContainer}>
+          <Text style={styles.infoText}>Farmer's Land</Text>
+        </Pressable>
+
+        <Pressable
+          style={{
+            backgroundColor: '#B21B1D',
+            borderRadius: 5,
+            height: 50,
+            marginVertical: 40,
+            justifyContent: 'center',
+          }}
+          onPress={() => {
+            AsyncStorage.removeItem('profile');
+            AsyncStorage.removeItem('token');
+            dispatch(isLogin(false));
+          }}
+          color="#fff">
+          <Text
+            style={{
+              textAlign: 'center',
+              fontWeight: 'bold',
+              color: '#fff',
+              fontSize: 16,
+            }}>
+            Logout
+          </Text>
+        </Pressable>
       </ScrollView>
-    </ImageBackground>
+    </View>
   );
 }
 
