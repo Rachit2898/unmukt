@@ -101,10 +101,10 @@ const Infra = ({navigation, route, ...props}) => {
           onPress={() => setShowinfra(state => !state)}>
           <Text style={styles.text}>INFRA</Text>
 
-          {!showInfra ? (
-            <Image source={imageUp} style={styles.dropdownIcon} />
+          {showInfra ? (
+            <AntDesign name="down" size={20} color="#fff" />
           ) : (
-            <Image source={imageDown} style={styles.dropdownIcon} />
+            <AntDesign name="up" size={20} color="#fff" />
           )}
         </TouchableOpacity>
       </View>
@@ -170,9 +170,9 @@ const Infra = ({navigation, route, ...props}) => {
           <Text style={styles.text}>Accept Raw Material</Text>
 
           {showRaw ? (
-            <Image source={imageUp} style={styles.dropdownIcon} />
+            <AntDesign name="up" size={20} color="#fff" />
           ) : (
-            <Image source={imageDown} style={styles.dropdownIcon} />
+            <AntDesign name="down" size={20} color="#fff" />
           )}
         </TouchableOpacity>
       </View>

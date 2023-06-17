@@ -122,7 +122,7 @@ export default function HarvestingRecord({navigation, routes}) {
       <View style={styles.sec}>
         <View
           style={{
-            backgroundColor: '#D9D9D9',
+            backgroundColor: '#BD1B21',
             marginHorizontal: 10,
             borderRadius: 5,
           }}>
@@ -132,21 +132,9 @@ export default function HarvestingRecord({navigation, routes}) {
             <Text style={styles.text}>Harvesting in Progress</Text>
 
             {!showInfra ? (
-              <Image
-                source={imageUp}
-                style={{
-                  width: 20,
-                  height: 20,
-                }}
-              />
+              <AntDesign name="up" size={20} color="#fff" />
             ) : (
-              <Image
-                source={imageDown}
-                style={{
-                  width: 20,
-                  height: 20,
-                }}
-              />
+              <AntDesign name="down" size={20} color="#fff" />
             )}
           </TouchableOpacity>
         </View>
@@ -186,7 +174,7 @@ export default function HarvestingRecord({navigation, routes}) {
       <View style={styles.sec}>
         <View
           style={{
-            backgroundColor: '#D9D9D9',
+            backgroundColor: '#BD1B21',
             marginHorizontal: 10,
             borderRadius: 5,
           }}>
@@ -196,21 +184,9 @@ export default function HarvestingRecord({navigation, routes}) {
             <Text style={styles.text}>Raw Material Collection in Progress</Text>
 
             {!showRaw ? (
-              <Image
-                source={imageUp}
-                style={{
-                  width: 20,
-                  height: 20,
-                }}
-              />
+              <AntDesign name="up" size={20} color="#fff" />
             ) : (
-              <Image
-                source={imageDown}
-                style={{
-                  width: 20,
-                  height: 20,
-                }}
-              />
+              <AntDesign name="down" size={20} color="#fff" />
             )}
           </TouchableOpacity>
         </View>
@@ -269,7 +245,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#FFF',
 
     // alignSelf: 'center',
   },

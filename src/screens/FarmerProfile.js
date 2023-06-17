@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   Linking,
+  Platform,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {
@@ -38,6 +39,7 @@ const BoldTextInput = ({label, value, onChangeText, isEditable, style}) => {
     <View style={style}>
       <Text style={{fontWeight: 'bold'}}>{label}</Text>
       <TextInput
+        label={Platform.OS == 'android' ? label : ''}
         variant="standard"
         style={{fontWeight: 'bold', marginTop: -10}}
         editable={isEditable}
