@@ -16,38 +16,49 @@ import {
   Image,
 } from 'react-native';
 
-import MenuIcon from './src/assets/MenuIcon.svg';
-import Notification from './src/assets/Notification.svg';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import Login from './src/components/Login';
-import BottomTabs from './src/navigation/BottomTabs';
 import {NavigationContainer} from '@react-navigation/native';
-import TabRoutes from './src/navigation/TabRoutes';
-import SvgUri from 'react-native-svg-uri';
-import Maps from './src/MapsCode/Maps';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import {store} from './src/Redux-Files/store';
 import MainApp from './MainApp';
 import {Provider} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import SideMenu from './src/screens/SideMenu';
+
+const Drawer = createDrawerNavigator();
+
+const MyDrawer = ({screen}) => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="BottamTab"
+      screenOptions={{
+        drawerType: 'front',
+      }}
+      drawerContent={props => <SideMenu {...props} />}>
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="BottamTab"
+        component={() => <MainApp screen={screen} />}
+      />
+    </Drawer.Navigator>
+  );
+};
 
 function App() {
-  const [screen, setScreen] = React.useState('BottamTab');
+  const [screen, setScreen] = React.useState('BottomTab');
   const handleNavigationStateChange = state => {
-    setScreen(state.routes[state.index].name);
+    const currentRoute = state?.routes[state.index];
+    const nestedRoute = currentRoute.state?.routes[currentRoute?.state?.index];
+    const screenName = nestedRoute ? nestedRoute?.name : currentRoute.name;
+    console.log({screenName});
+    setScreen(screenName);
   };
   return (
     <Provider store={store}>
       <NavigationContainer onStateChange={handleNavigationStateChange}>
         <SafeAreaView style={{flex: 1}}>
-          <MainApp screen={screen} />
+          <MyDrawer screen={screen} />
         </SafeAreaView>
       </NavigationContainer>
     </Provider>

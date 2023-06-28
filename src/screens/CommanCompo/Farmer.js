@@ -11,7 +11,8 @@ import {
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Axios} from '../../core/axios';
-
+import Verified from '../../assets/verified.png';
+import UnVerified from '../../assets/unverified.png';
 import FarmerProfile from '../../assets/user.png';
 
 export default function Farmer({navigation, item, refreshFarmerList}) {
@@ -48,8 +49,10 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
       style={{
         flexDirection: 'row',
         backgroundColor: '#fff',
-        marginVertical: 5,
+        margin: 5,
         borderRadius: 5,
+        marginHorizontal: 10,
+        padding: 10,
       }}
       onPress={() =>
         navigation.navigate('FarmerProfile', {
@@ -59,38 +62,48 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
       }>
       <View
         style={{
-          height: 100,
-          width: 100,
-          margin: 20,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Image
-          source={FarmerProfile}
-          style={{
-            width: 80,
-            height: 80,
-          }}
-        />
-      </View>
-      <View
-        style={{
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'flex-start',
-          width: '50%',
-          marginLeft: 20,
-          marginRight: 20,
+          width: '100%',
           backgroundColor: '#fff',
         }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}>
+          <View>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+              }}>
+              {item.firstName} {item.lastName}
+            </Text>
+          </View>
+          {item.catchmentName === 'Tora' ? (
+            <View style={{alignItems: 'center', width: '20%'}}>
+              <Image style={{height: 22, width: 22}} source={Verified} />
+              <Text style={{fontSize: 12, fontWeight: 'bold'}}>Verified</Text>
+            </View>
+          ) : (
+            <View style={{alignItems: 'center', width: '20%'}}>
+              <Image style={{height: 20, width: 20}} source={UnVerified} />
+              <Text style={{fontSize: 12, fontWeight: 'bold'}}>UnVerified</Text>
+            </View>
+          )}
+        </View>
         <Text
           style={{
             fontSize: 20,
             fontWeight: 'bold',
             color: '#B21B1D',
-            marginTop: 10,
           }}>
-          {item.firstName}
+          {item.catchmentName}
         </Text>
         <Text
           style={{
@@ -101,16 +114,31 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
           }}>
           UID: {item.farmerUid}
         </Text>
-
-        <Text
+        <View
           style={{
-            fontSize: 13,
-            fontWeight: 'bold',
-            color: '#494c4c',
             marginTop: 5,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            alignItems: 'center',
           }}>
-          Mob: {item.mobileNo}
-        </Text>
+          <Text
+            style={{
+              fontSize: 13,
+              fontWeight: 'bold',
+              color: '#494c4c',
+            }}>
+            Mob: {item.mobileNo}
+          </Text>
+          <View>
+            <Text style={{fontSize: 12, fontWeight: 'bold'}}>
+              Harvesting:Yes
+            </Text>
+            <Text style={{fontSize: 12, fontWeight: 'bold'}}>
+              Collection:Yes
+            </Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );

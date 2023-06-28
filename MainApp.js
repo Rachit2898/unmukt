@@ -3,6 +3,7 @@ import {StyleSheet, View, Image, Platform, Text, Pressable} from 'react-native';
 import MenuIcon from './src/assets/MenuIcon.svg';
 import Notification from './src/assets/Notification.svg';
 import BackButton from './src/assets/back.png';
+import Menu from './src/assets/menu.png';
 import Login from './src/components/Login';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import TabRoutes from './src/navigation/TabRoutes';
@@ -16,6 +17,8 @@ function MainApp({screen}) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isLoginValue = useSelector(state => state.login);
+
+  console.log(screen);
 
   useEffect(() => {
     AsyncStorage.getItem('token').then(token => {
@@ -65,7 +68,25 @@ function MainApp({screen}) {
                 Back
               </Text>
             </Pressable>
-          ) : null}
+          ) : (
+            <Pressable
+              onPress={() => navigation.openDrawer()}
+              style={{
+                position: 'absolute',
+                left: 0,
+                paddingLeft: 10,
+                bottom: 10,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image
+                source={Menu}
+                style={{height: 30, width: 30}}
+                resizeMode="contain"
+              />
+            </Pressable>
+          )}
           <Image
             source={require('./src/assets/icon.png')}
             style={styles.logo}

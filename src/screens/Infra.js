@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   dropdown: {
     flexDirection: 'row',
     position: 'relative',
-    padding: 20,
+    padding: 10,
     justifyContent: 'space-between',
   },
   text: {
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 10,
     backgroundColor: '#D9D9D9',
-    margin: 10,
+    marginHorizontal: 10,
+    marginVertical: 5,
     borderRadius: 5,
   },
 });

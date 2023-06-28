@@ -177,9 +177,10 @@ export default function HarvestingRecord({navigation, routes}) {
             backgroundColor: '#BD1B21',
             marginHorizontal: 10,
             borderRadius: 5,
+            marginBottom: 10,
           }}>
           <TouchableOpacity
-            style={styles.dropdown}
+            style={[styles.dropdown]}
             onPress={() => setShowRaw(state => !state)}>
             <Text style={styles.text}>Raw Material Collection in Progress</Text>
 
@@ -191,7 +192,7 @@ export default function HarvestingRecord({navigation, routes}) {
           </TouchableOpacity>
         </View>
         {showRaw ? (
-          <View style={{backgroundColor: '#f2f2f2'}}>
+          <View style={{backgroundColor: '#f2f2f2', marginTop: 10}}>
             {RawMaterialList.map((prop, key) => {
               return (
                 <TouchableOpacity
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   dropdown: {
     flexDirection: 'row',
     position: 'relative',
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -272,7 +273,8 @@ const styles = StyleSheet.create({
   },
   listItem: {
     backgroundColor: '#fff',
-    margin: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
     borderRadius: 5,
     padding: 10,
   },

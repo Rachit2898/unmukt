@@ -9,6 +9,7 @@ import {
   FlatList,
   Linking,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {BarChart, Grid} from 'react-native-svg-charts';
@@ -78,6 +79,8 @@ export default function Home() {
   const screenWidth = Dimensions.get('window').width;
   const [showDetails, setShowDetails] = useState(true);
   const [showLandDetails, setShowLandDetails] = useState(true);
+  const [showSourcingDetails, setShowSourcingDetails] = useState(true);
+  const [sourceData, setSourceData] = useState('');
 
   var data = dailyData;
 
@@ -140,8 +143,6 @@ export default function Home() {
           userDetails.orgUnitId,
       )
         .then(response => {
-          console.log('---------farmerdailyaddition---------');
-          console.log(response.data);
           setFarmerList(response.data);
         })
         .catch(error => {
@@ -155,8 +156,6 @@ export default function Home() {
           userDetails.orgUnitId,
       )
         .then(response => {
-          console.log('---------usertargetpercollectioncycle---------');
-          console.log(response.data);
           setDailyFarmerTarget(response.data[0].dailyTarFarmerAddition);
           setWeeklyFarmerTarget(response.data[0].weeklyTarFarmerAddition);
           setTotalFarmerTarget(response.data[0].totalTarFarmerAddition);
@@ -164,6 +163,14 @@ export default function Home() {
           setDailyLandTarget(response.data[0].dailyTarAcreLandAddition);
           setWeeklyLandTarget(response.data[0].weeklyTarAcreLandAddition);
           setTotalLandTarget(response.data[0].totalTarAcreLandAddition);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      Axios.get('sourcingDashboardSummary/June-2023/1 ')
+        .then(response => {
+          setSourceData(response.data);
         })
         .catch(error => {
           console.log(error);
@@ -297,26 +304,13 @@ export default function Home() {
           <WeatherCard />
         </View>
 
-        <View
-          style={{
-            backgroundColor: '#D9D9D9',
-            marginHorizontal: 10,
-            borderRadius: 5,
-            marginVertical: 10,
-          }}>
+        <View style={styles.firstDiv}>
           <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              position: 'relative',
-              padding: 20,
-              justifyContent: 'space-between',
-              borderBottomWidth: showDetails ? 1 : 0,
-              borderColor: '#fafafa',
-            }}
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
             onPress={() => setShowDetails(!showDetails)}>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: 'bold',
                 color: '#000000',
                 marginHorizontal: 10,
@@ -424,13 +418,13 @@ export default function Home() {
             backgroundColor: '#D9D9D9',
             marginHorizontal: 10,
             borderRadius: 5,
-            marginVertical: 10,
+            marginVertical: 5,
           }}>
           <TouchableOpacity
             style={{
               flexDirection: 'row',
               position: 'relative',
-              padding: 20,
+              padding: 10,
               justifyContent: 'space-between',
               borderBottomWidth: showLandDetails ? 1 : 0,
               borderColor: '#fafafa',
@@ -438,7 +432,7 @@ export default function Home() {
             onPress={() => setShowLandDetails(!showLandDetails)}>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: 'bold',
                 color: '#000000',
                 marginHorizontal: 10,
@@ -543,7 +537,543 @@ export default function Home() {
             </View>
           )}
         </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowSourcingDetails(!showSourcingDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Sourcing KPI
+            </Text>
+            {!showSourcingDetails ? (
+              <Image
+                source={imageUp}
+                style={{
+                  width: 20,
+                  height: 20,
+                }}
+              />
+            ) : (
+              <Image
+                source={imageDown}
+                style={{
+                  width: 20,
+                  height: 20,
+                }}
+              />
+            )}
+          </TouchableOpacity>
+
+          {showSourcingDetails && (
+            <View
+              style={{
+                marginHorizontal: 10,
+                flexDirection: 'column',
+                marginBottom: 10,
+              }}>
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Farmers & Land
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Farmers</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.farmers_count ? sourceData?.farmers_count : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Land Onboarded
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.land_onboarded ? sourceData?.land_onboarded : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Total Land (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.total_land_in_acres
+                    ? sourceData?.total_land_in_acres
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Harvesting
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Harvesting Completed (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.area_harvested ? sourceData?.area_harvested : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Harvesting Done by Farmer (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.area_harvested_by_farmers
+                    ? sourceData?.area_harvested_by_farmers
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Harvesting in Progress (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.area_harvesting_in_progress
+                    ? sourceData?.area_harvesting_in_progress
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Farmers who used their Harvesters
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.harvesting_by_farmers
+                    ? sourceData?.harvesting_by_farmers
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Farmer who used USPL Harvesters
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.harvesting_by_uspl
+                    ? sourceData?.harvesting_by_uspl
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Harvesting to be Started
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Farmer Impacted
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.farmer_impacted_count_h
+                    ? sourceData?.farmer_impacted_count_h
+                    : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Land Parcel Impacted
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.land_parcel_impacted_count_h
+                    ? sourceData?.land_parcel_impacted_count_h
+                    : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Land Impacted (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.land_impacted_in_acres_h
+                    ? sourceData?.land_impacted_in_acres_h
+                    : 0}
+                </Text>
+              </View>
+
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Infra Details
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Harvester
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.harvester_count
+                    ? sourceData?.harvester_count
+                    : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Tractor</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.tractor_count ? sourceData?.tractor_count : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Baler</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.baler_count ? sourceData?.baler_count : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Reaper</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.reaper_count ? sourceData?.reaper_count : 0}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Pickup</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.racker_count}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Rickshaw</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.rickshaw_count}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>Racker</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.racker_count}
+                </Text>
+              </View>
+
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Raw Material Collection Details
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Area Collected (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.area_collected}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Collection In Progress (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.area_collection_in_progress}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Bales Count
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.count_of_bales}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Bales Collected (Tons)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.bales_collected}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Loose material collected (Tons)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.loose_rm_collected}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Total Material Collected (Tons)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.material_collected}
+                </Text>
+              </View>
+
+              <View style={{marginVertical: 10}}>
+                <Text
+                  style={{
+                    color: '#B21B1D',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 16,
+                  }}>
+                  Raw Material Collection to be started
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Farmer Impacted
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.farmer_impacted_count_c}
+                </Text>
+              </View>
+
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Land Parcel (Impacted)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.land_parcel_impacted_count_c}
+                </Text>
+              </View>
+              <View style={styles.div}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  Land Impacted (Acres)
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                  {sourceData?.land_impacted_in_acres_c}
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Harvesting KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Collection KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Weekly Task KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Monthly Task KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Last 7 Days Harvesting KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.firstDiv}>
+          <TouchableOpacity
+            style={[styles.button, {borderBottomWidth: showDetails ? 1 : 0}]}
+            onPress={() => setShowDetails(!showDetails)}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Last 7 Days Collection KPI
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: '#B21B1D',
+                marginHorizontal: 10,
+                alignSelf: 'center',
+              }}>
+              Coming Soon
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  div: {
+    padding: 10,
+    backgroundColor: '#f4f4f4',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 1,
+    borderRadius: 5,
+  },
+  firstDiv: {
+    backgroundColor: '#D9D9D9',
+    marginHorizontal: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  button: {
+    flexDirection: 'row',
+    position: 'relative',
+    padding: 10,
+    justifyContent: 'space-between',
+    borderColor: '#fafafa',
+  },
+});

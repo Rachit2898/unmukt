@@ -14,6 +14,8 @@ import TactorDailyRecord from '../screens/TractorDailyRecord';
 import RawMaterialTrip from '../screens/RawMaterialTrip';
 import AcceptRawMaterial from '../screens/AcceptRawMaterial';
 import DummyFarmerLand from '../screens/DummyFarmers.js';
+import Verify from '../screens/VerifyForCyclePage';
+import VerifyLand from '../screens/VerifyLand';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +42,8 @@ export default function TabRoutes() {
       <Stack.Screen name="RawMaterialTrip" component={RawMaterialTrip} />
       <Stack.Screen name="AcceptRawMaterial" component={AcceptRawMaterial} />
       <Stack.Screen name="DummyFarmerLand" component={DummyFarmerLand} />
+      <Stack.Screen name="Verify" component={Verify} />
+      <Stack.Screen name="VerifyLand" component={VerifyLand} />
     </Stack.Navigator>
   );
 }

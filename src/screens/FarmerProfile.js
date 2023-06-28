@@ -8,15 +8,10 @@ import {
   FlatList,
   Linking,
   Platform,
+  Pressable,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {
-  Stack,
-  TextInput,
-  IconButton,
-  Button,
-  Icon,
-} from '@react-native-material/core';
+import {Stack, TextInput} from '@react-native-material/core';
 import SwitchSelector from 'react-native-switch-selector';
 // import SvgUri from 'react-native-svg-uri';
 import MapPin from '../assets/MapPin.svg';
@@ -30,21 +25,30 @@ import MapView, {Marker, Polygon} from 'react-native-maps';
 import {checkAuth} from '../Helper';
 import editButton from '../assets/editProfile.png';
 import map from '../assets/map.png';
+import Verified from '../assets/verified.png';
+import UnVerified from '../assets/unverified.png';
 import Cancel from '../assets/cancel.png';
 import Ok from '../assets/ok.png';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-const BoldTextInput = ({label, value, onChangeText, isEditable, style}) => {
+const BoldTextInput = ({
+  label,
+  value,
+  onChangeText,
+  isEditable,
+  style,
+  trailing,
+}) => {
   return (
     <View style={style}>
       <Text style={{fontWeight: 'bold'}}>{label}</Text>
       <TextInput
-        label={Platform.OS == 'android' ? label : ''}
         variant="standard"
-        style={{fontWeight: 'bold', marginTop: -10}}
+        style={{fontWeight: 'bold'}}
         editable={isEditable}
         value={value}
         onChangeText={onChangeText}
+        trailing={trailing}
       />
     </View>
   );
@@ -328,38 +332,85 @@ export default function FarmerProfile({navigation, route}) {
             <Image
               source={{uri: imageUri}}
               style={{
-                width: 100,
-                height: 100,
+                width: 110,
+                height: 125,
                 marginHorizontal: 10,
                 borderRadius: 2,
               }}
             />
 
-            <View
-              style={{
-                flexDirection: 'column',
-                alignContent: 'center',
-                marginTop: 10,
-                width: '70%',
-                paddingHorizontal: 10,
-              }}>
-              <Text
+            <View style={{width: '100%'}}>
+              <View
                 style={{
-                  fontSize: 25,
-                  fontWeight: 'bold',
-                  color: '#B21B1D',
+                  flexDirection: 'column',
+                  alignContent: 'center',
+                  marginTop: 10,
+                  width: '70%',
+                  paddingHorizontal: 10,
                 }}>
-                {farmerData.firstName} {farmerData.lastName}
-              </Text>
-              <Text
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      fontWeight: 'bold',
+                      color: '#B21B1D',
+                    }}>
+                    {farmerData.firstName} {farmerData.lastName}
+                  </Text>
+                  {farmerDetails.catchmentName === 'Tora' ? (
+                    <View style={{alignItems: 'center', width: '20%'}}>
+                      <Image
+                        style={{height: 22, width: 22}}
+                        source={Verified}
+                      />
+                    </View>
+                  ) : (
+                    <View style={{alignItems: 'center', width: '20%'}}>
+                      <Image
+                        style={{height: 20, width: 20}}
+                        source={UnVerified}
+                      />
+                    </View>
+                  )}
+                </View>
+                <Text
+                  style={{
+                    paddingTop: 10,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#000000',
+                  }}>
+                  UID: {farmerData.farmerUid}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('Verify', {farmerData: farmerData})
+                }
                 style={{
-                  paddingTop: 10,
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  color: '#000000',
+                  flexDirection: 'column',
+                  alignContent: 'center',
+                  marginTop: 10,
+                  width: '55%',
+                  paddingHorizontal: 10,
+                  backgroundColor: '#B21B1D',
+                  borderRadius: 5,
                 }}>
-                UID: {farmerData.farmerUid}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textAlign: 'center',
+                    padding: 10,
+                  }}>
+                  Verify for current cycle
+                </Text>
+              </Pressable>
             </View>
           </View>
           {/* make a line seperator */}
@@ -399,9 +450,9 @@ export default function FarmerProfile({navigation, route}) {
                 }}>
                 <BoldTextInput
                   label="Mobile Number"
-                  variant="standard"
                   style={{
                     marginTop: 20,
+                    backgroundColor: '#fff',
                   }}
                   // set editable to false
                   editable={isEditable}
@@ -1019,16 +1070,33 @@ export default function FarmerProfile({navigation, route}) {
                         justifyContent: 'space-between',
                       }}
                       direction="column">
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          fontWeight: 'bold',
-                          color: '#B21B1D',
-                          marginLeft: 10,
-                          justifyContent: 'flex-start',
-                        }}>
-                        Catchment Area ({farmerDetails.catchmentName})
-                      </Text>
+                      <View style={{flexDirection: 'row'}}>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            color: '#B21B1D',
+                            marginLeft: 10,
+                            justifyContent: 'flex-start',
+                          }}>
+                          Catchment Area ({farmerDetails.catchmentName})
+                        </Text>
+                        {farmerDetails.catchmentName === 'Tora' ? (
+                          <View style={{alignItems: 'center', width: '20%'}}>
+                            <Image
+                              style={{height: 22, width: 22}}
+                              source={Verified}
+                            />
+                          </View>
+                        ) : (
+                          <View style={{alignItems: 'center', width: '20%'}}>
+                            <Image
+                              style={{height: 20, width: 20}}
+                              source={UnVerified}
+                            />
+                          </View>
+                        )}
+                      </View>
 
                       <Text
                         style={{
