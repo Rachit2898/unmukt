@@ -17,6 +17,8 @@ import SwitchSelector from 'react-native-switch-selector';
 // import SvgUri from 'react-native-svg-uri';
 import MapPin from '../assets/MapPin.svg';
 import DocumentPicker from 'react-native-document-picker';
+import Verified from '../assets/verified.png';
+import UnVerified from '../assets/unverified.png';
 import {Axios} from '../core/axios';
 import AreaVector from '../assets/AreaVector.svg';
 import {Picker} from '@react-native-picker/picker';
@@ -310,29 +312,90 @@ const VerifyForCyclePage = ({route}) => {
       <View style={{marginHorizontal: 10, marginTop: 10}}>
         <View
           style={{
+            flexDirection: 'row',
             backgroundColor: '#fff',
             padding: 10,
             borderRadius: 5,
-            marginVertical: 10,
           }}>
-          <View
+          <Image
+            source={{uri: imageUri}}
             style={{
-              flexDirection: 'column',
-              alignContent: 'center',
-              paddingHorizontal: 10,
-            }}>
-            <Text
+              width: 110,
+              height: 125,
+              marginHorizontal: 10,
+              borderRadius: 2,
+            }}
+          />
+
+          <View style={{width: '100%'}}>
+            <View
               style={{
-                fontSize: 25,
-                fontWeight: 'bold',
-                color: '#B21B1D',
-                textAlign: 'center',
+                flexDirection: 'column',
+                alignContent: 'center',
+                marginTop: 10,
+                width: '70%',
+                paddingHorizontal: 10,
               }}>
-              {farmerData.firstName} {farmerData.lastName}
-            </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 25,
+                    fontWeight: 'bold',
+                    color: '#B21B1D',
+                  }}>
+                  {farmerData.firstName} {farmerData.lastName}
+                </Text>
+                {farmerDetails.catchmentName === 'Tora' ? (
+                  <View style={{alignItems: 'center', width: '20%'}}>
+                    <Image style={{height: 22, width: 22}} source={Verified} />
+                  </View>
+                ) : (
+                  <View style={{alignItems: 'center', width: '20%'}}>
+                    <Image
+                      style={{height: 20, width: 20}}
+                      source={UnVerified}
+                    />
+                  </View>
+                )}
+              </View>
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: '#000000',
+                }}>
+                UID: {farmerData.farmerUid}
+              </Text>
+              <Pressable
+                style={{
+                  flexDirection: 'column',
+                  alignContent: 'center',
+                  marginTop: 10,
+                  width: '55%',
+                  paddingHorizontal: 10,
+                  backgroundColor: '#B21B1D',
+                  borderRadius: 5,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textAlign: 'center',
+                    padding: 10,
+                  }}>
+                  Save
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
-        <View style={styles.div}>
+        <View style={[styles.div, {marginTop: 5}]}>
           <Text style={{fontSize: 16, fontWeight: 'bold'}}>
             Did we harvested in last cycle?
           </Text>
@@ -898,6 +961,59 @@ const VerifyForCyclePage = ({route}) => {
               />
             </TouchableOpacity>
           )}
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 5,
+            marginHorizontaln: 10,
+            marginBottom: 20,
+            justifyContent: 'space-between',
+          }}>
+          <Pressable
+            style={{
+              flexDirection: 'column',
+              alignContent: 'center',
+              marginTop: 10,
+              width: '45%',
+              paddingHorizontal: 10,
+              backgroundColor: '#B21B1D',
+              borderRadius: 5,
+            }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 'bold',
+                color: '#fff',
+                textAlign: 'center',
+                padding: 10,
+              }}>
+              Save
+            </Text>
+          </Pressable>
+          <Pressable
+            style={{
+              flexDirection: 'column',
+              alignContent: 'center',
+              marginTop: 10,
+              width: '45%',
+              paddingHorizontal: 10,
+              backgroundColor: '#B21B1D',
+              borderRadius: 5,
+            }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 'bold',
+                color: '#fff',
+                textAlign: 'center',
+                padding: 10,
+              }}>
+              Discard
+            </Text>
+          </Pressable>
         </View>
       </View>
     </ScrollView>

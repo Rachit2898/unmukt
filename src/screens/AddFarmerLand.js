@@ -37,6 +37,8 @@ import RawMaterialSub from './CommanCompo/RawMaterialSub';
 import {checkAuth} from '../Helper';
 import upDown from '../assets/upDown.png';
 import dropDown from '../assets/dropDown.png';
+import Verified from '../assets/verified.png';
+import UnVerified from '../assets/unverified.png';
 
 const BoldTextInput = ({
   label,
@@ -69,6 +71,7 @@ export default function AddFarmerLand({navigation, route}) {
     landDetails,
     farmerName,
     redirect = false,
+    imageUri,
   } = route.params;
   console.log('first', route.params);
   const [showPopup, setShowPopup] = useState(false);
@@ -321,8 +324,6 @@ export default function AddFarmerLand({navigation, route}) {
     distanceToWaterSource: 0,
     overrideByUser: 'N',
   });
-
-  const [imageUri, setImageUri] = useState(null);
 
   const [showDetails, setShowDetails] = useState(true);
   const [showHarvestingDetails, setShowHarvestingDetails] = useState(false);
@@ -624,55 +625,107 @@ export default function AddFarmerLand({navigation, route}) {
       <ScrollView style={{margin: 10}}>
         <View
           style={{
-            backgroundColor: '#fff',
-            padding: 10,
-            borderRadius: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
           }}>
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: 'bold',
-              fontSize: 25,
-              fontWeight: 'bold',
-              color: '#B21B1D',
-              alignSelf: 'center',
-              textAlign: 'center',
-            }}>
-            {farmerName}
-          </Text>
-          <Pressable
-            onPress={() =>
-              navigation.navigate('VerifyLand', {
-                fetchFarmerLands: fetchFarmerLands,
-                farmerId,
-                farmerName,
-                landDetails,
-                isViewMode: true,
-              })
-            }
-            style={{
-              alignContent: 'center',
+              flexDirection: 'row',
 
-              width: '55%',
-              paddingHorizontal: 10,
-              backgroundColor: '#B21B1D',
+              backgroundColor: '#fff',
+              padding: 10,
               borderRadius: 5,
-              justifyContent: 'center',
             }}>
-            <Text
+            <Image
+              source={{uri: imageUri}}
               style={{
-                fontSize: 14,
-                fontWeight: 'bold',
-                color: '#fff',
-                textAlign: 'center',
-                padding: 10,
-              }}>
-              Verify for current cycle
-            </Text>
-          </Pressable>
+                width: 110,
+                height: 125,
+                marginHorizontal: 10,
+                borderRadius: 2,
+              }}
+            />
+
+            <View style={{width: '100%'}}>
+              <View
+                style={{
+                  flexDirection: 'column',
+                  alignContent: 'center',
+                  marginTop: 10,
+                  width: '70%',
+                  paddingHorizontal: 10,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      fontWeight: 'bold',
+                      color: '#B21B1D',
+                    }}>
+                    {farmerName}
+                  </Text>
+                  {landDetails.catchmentName === 'Tora' ? (
+                    <View style={{alignItems: 'center', width: '20%'}}>
+                      <Image
+                        style={{height: 22, width: 22}}
+                        source={Verified}
+                      />
+                    </View>
+                  ) : (
+                    <View style={{alignItems: 'center', width: '20%'}}>
+                      <Image
+                        style={{height: 20, width: 20}}
+                        source={UnVerified}
+                      />
+                    </View>
+                  )}
+                </View>
+                <Text
+                  style={{
+                    paddingTop: 10,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#000000',
+                  }}>
+                  UID: {farmerId}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('VerifyLand', {
+                    fetchFarmerLands: fetchFarmerLands,
+                    farmerId,
+                    farmerName,
+                    landDetails,
+                    isViewMode: true,
+                    imageUri,
+                  })
+                }
+                style={{
+                  alignContent: 'center',
+                  marginTop: 10,
+                  width: '55%',
+                  paddingHorizontal: 10,
+                  backgroundColor: '#B21B1D',
+                  borderRadius: 5,
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textAlign: 'center',
+                    padding: 10,
+                  }}>
+                  Verify for current cycle
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
 
         <View

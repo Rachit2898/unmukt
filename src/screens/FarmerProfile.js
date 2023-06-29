@@ -1007,6 +1007,7 @@ export default function FarmerProfile({navigation, route}) {
                       farmerId: farmerDetails.id,
                       farmerName:
                         farmerDetails.firstName + ' ' + farmerDetails.lastName,
+                      imageUri: imageUri,
                     });
                   }}>
                   <Text
@@ -1061,6 +1062,8 @@ export default function FarmerProfile({navigation, route}) {
                           farmerDetails.firstName +
                           ' ' +
                           farmerDetails.lastName,
+
+                        imageUri: imageUri,
                       });
                     }}>
                     <Stack
