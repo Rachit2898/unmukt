@@ -36,7 +36,7 @@ const BoldTextInput = ({
   label,
   value,
   onChangeText,
-  isEditable,
+  editable,
   style,
   trailing,
 }) => {
@@ -46,7 +46,7 @@ const BoldTextInput = ({
       <TextInput
         variant="standard"
         style={{fontWeight: 'bold'}}
-        editable={isEditable}
+        editable={editable}
         value={value}
         onChangeText={onChangeText}
         trailing={trailing}
@@ -320,8 +320,8 @@ const VerifyForCyclePage = ({route}) => {
           <Image
             source={{uri: imageUri}}
             style={{
-              width: 110,
-              height: 125,
+              width: 100,
+              height: 100,
               marginHorizontal: 10,
               borderRadius: 2,
             }}
@@ -371,27 +371,6 @@ const VerifyForCyclePage = ({route}) => {
                 }}>
                 UID: {farmerData.farmerUid}
               </Text>
-              <Pressable
-                style={{
-                  flexDirection: 'column',
-                  alignContent: 'center',
-                  marginTop: 10,
-                  width: '55%',
-                  paddingHorizontal: 10,
-                  backgroundColor: '#B21B1D',
-                  borderRadius: 5,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    textAlign: 'center',
-                    padding: 10,
-                  }}>
-                  Save
-                </Text>
-              </Pressable>
             </View>
           </View>
         </View>

@@ -1,12 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import RNRestart from 'react-native-restart';
+import baseURL from '../Config';
 
 const instance = axios.create({
-  //baseURL:
-  //'http://sathiunmuktapp-env.eba-pp925g5c.ap-south-1.elasticbeanstalk.com',
-  baseURL:
-    'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com',
+  baseURL: baseURL,
 });
 (async () => {
   const user = (await AsyncStorage.getItem('token')) || undefined;
@@ -16,6 +14,7 @@ const instance = axios.create({
     instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 })();
+
 instance.interceptors.request.use(config => {
   console.log(config, '--------------------------------');
   return config;

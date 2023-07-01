@@ -44,7 +44,7 @@ const BoldTextInput = ({
   label,
   value,
   onChangeText,
-  isEditable,
+  editable,
   style,
   trailing,
 }) => {
@@ -54,7 +54,7 @@ const BoldTextInput = ({
       <TextInput
         variant="standard"
         style={{fontWeight: 'bold'}}
-        editable={isEditable}
+        editable={editable}
         value={value}
         onChangeText={onChangeText}
         trailing={trailing}
@@ -107,6 +107,28 @@ export default function AddFarmerLand({navigation, route}) {
       // console.log(JSON.parse(profile) ,'profileeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
     });
   }, []);
+
+  const [locations, setLocations] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchLocation = async () => {
+      const locationURL = 'https://maps.app.goo.gl/UNVgimysFD9RS1MC9'; // Replace with your location URL
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          locationURL,
+        )}`,
+      ); // Replace YOUR_API_KEY with your actual Google Maps API key
+
+      if (response.data.results.length > 0) {
+        const {lat, lng} = response.data.results[0].geometry.location;
+        setLocations({lat: lat, lng: lng});
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
+  console.log({locations});
 
   useEffect(() => {
     var collectionCycle = '';

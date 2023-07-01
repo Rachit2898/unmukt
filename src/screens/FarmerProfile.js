@@ -35,7 +35,7 @@ const BoldTextInput = ({
   label,
   value,
   onChangeText,
-  isEditable,
+  editable,
   style,
   trailing,
 }) => {
@@ -45,7 +45,7 @@ const BoldTextInput = ({
       <TextInput
         variant="standard"
         style={{fontWeight: 'bold'}}
-        editable={isEditable}
+        editable={editable}
         value={value}
         onChangeText={onChangeText}
         trailing={trailing}
@@ -56,6 +56,7 @@ const BoldTextInput = ({
 
 export default function FarmerProfile({navigation, route}) {
   const {farmerData, refreshFarmerList} = route.params;
+  const [isEditable, setIsEditable] = useState(false);
 
   const [addressCords, setAddressCords] = useState([
     {
@@ -304,7 +305,6 @@ export default function FarmerProfile({navigation, route}) {
     {label: 'No', value: 'No'},
   ];
 
-  const [isEditable, setIsEditable] = useState(false);
   return (
     <SafeAreaView
       style={{
@@ -513,6 +513,7 @@ export default function FarmerProfile({navigation, route}) {
                   });
                 }}
               />
+
               <BoldTextInput
                 label="Address Line 2"
                 variant="standard"

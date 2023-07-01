@@ -31,6 +31,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {check, request, PERMISSIONS} from 'react-native-permissions';
 import ImagePicker from 'react-native-image-crop-picker';
 import {checkAuth} from '../Helper';
+import baseURL from '../Config';
 
 export default function AddFarmer({navigation, route}) {
   const [isLoading, setIsLoading] = useState(false);
@@ -321,15 +322,11 @@ export default function AddFarmer({navigation, route}) {
         return;
       }
       console.log(data);
-      Axios.post(
-        'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com/farmer',
-        data,
-        {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
+      Axios.post(`${baseURL}/farmer`, data, {
+        headers: {
+          Authorization: 'Bearer ' + token,
         },
-      )
+      })
         .then(res => {
           console.log(res, 'adeeddddddddddddddddddddddddddddddddd');
           refreshFarmerList();
@@ -368,18 +365,13 @@ export default function AddFarmer({navigation, route}) {
     console.log(profile);
     console.log(
       'url',
-      'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com/catchmentArea/' +
-        JSON.parse(profile).orgUnitId,
+      `${baseURL}/catchmentArea/` + JSON.parse(profile).orgUnitId,
     );
-    Axios.get(
-      'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com/catchmentArea/' +
-        JSON.parse(profile).orgUnitId,
-      {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
+    Axios.get(`${baseURL}/catchmentArea/` + JSON.parse(profile).orgUnitId, {
+      headers: {
+        Authorization: 'Bearer ' + token,
       },
-    )
+    })
       .then(res => {
         console.log(res.data);
         setCatchementAreaList(res.data);
@@ -446,16 +438,12 @@ export default function AddFarmer({navigation, route}) {
 
       setIsLoading(true);
 
-      Axios.post(
-        'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com/images/1',
-        formData,
-        {
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'multipart/form-data',
-          },
+      Axios.post(`${baseURL}/images/1`, formData, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
         .then(res => {
           console.log('-----------------');
           console.log(res.data);
@@ -526,16 +514,12 @@ export default function AddFarmer({navigation, route}) {
 
       setIsLoading(true);
 
-      Axios.post(
-        'http://unnmuktsaathiprodbackend-env-1.eba-a8422rfp.ap-south-1.elasticbeanstalk.com/images/1',
-        formData,
-        {
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'multipart/form-data',
-          },
+      Axios.post(`${baseURL}/images/1`, formData, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
         .then(res => {
           console.log('-----------------');
           console.log(res.data);

@@ -16,6 +16,10 @@ import AcceptRawMaterial from '../screens/AcceptRawMaterial';
 import DummyFarmerLand from '../screens/DummyFarmers.js';
 import Verify from '../screens/VerifyForCyclePage';
 import VerifyLand from '../screens/VerifyLand';
+import Comingsoon from '../screens/Comingsoon';
+import Heap from '../screens/Heap';
+import CostCalculation from '../screens/CostCalculation';
+import QueryScreen from '../screens/RaiseQuery';
 
 const Stack = createStackNavigator();
 
@@ -44,6 +48,10 @@ export default function TabRoutes() {
       <Stack.Screen name="DummyFarmerLand" component={DummyFarmerLand} />
       <Stack.Screen name="Verify" component={Verify} />
       <Stack.Screen name="VerifyLand" component={VerifyLand} />
+      <Stack.Screen name="Comingsoon" component={Comingsoon} />
+      <Stack.Screen name="Heap" component={Heap} />
+      <Stack.Screen name="CostCalculation" component={CostCalculation} />
+      <Stack.Screen name="QueryScreen" component={QueryScreen} />
     </Stack.Navigator>
   );
 }

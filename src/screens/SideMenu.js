@@ -1,10 +1,12 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import User from '../assets/user.png';
+import {useNavigation} from '@react-navigation/native';
 
 const SideMenu = () => {
   const [userDetails, setUserDetails] = useState({});
+  const navigation = useNavigation();
 
   useEffect(() => {
     AsyncStorage.getItem('profile').then(profile => {
@@ -46,48 +48,66 @@ const SideMenu = () => {
         </Text>
       </View>
       <View style={{padding: 10}}>
-        <View style={styles.div}>
+        <Pressable
+          onPress={() => navigation.navigate('Comingsoon')}
+          style={styles.div}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Value Added Services
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Heap')}
+          style={styles.div}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Heap
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Comingsoon')}
+          style={styles.div}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Raw material estimation methodology
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Comingsoon')}
+          style={styles.div}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Local Payments
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          style={styles.div}
+          onPress={() => navigation.navigate('CostCalculation')}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Cost Calculation
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          style={styles.div}
+          onPress={() => navigation.navigate('DummyFarmerLand')}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Show Land Parcels near me
           </Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.div}>
+        <Pressable
+          style={styles.div}
+          onPress={() => navigation.navigate('QueryScreen')}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Raise A Query
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Comingsoon')}
+          style={styles.div}>
           <Text style={{fontWeight: 'bold', color: '#494c4c', fontSize: 16}}>
             Daily Status reporting
           </Text>
-        </View>
-        <View style={styles.div}>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Comingsoon')}
+          style={styles.div}>
           <Text
             style={{
               fontWeight: 'bold',
@@ -96,7 +116,7 @@ const SideMenu = () => {
             }}>
             Daily Transport Vehicle Reporting
           </Text>
-        </View>
+        </Pressable>
       </View>
       <View
         style={{

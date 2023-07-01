@@ -108,12 +108,6 @@ export default function UserProfileView() {
         <View style={styles.separator} />
 
         <Pressable
-          onPress={() => navigation.navigate('DummyFarmerLand')}
-          style={styles.infoContainer}>
-          <Text style={styles.infoText}>Farmer's Land</Text>
-        </Pressable>
-
-        <Pressable
           style={{
             backgroundColor: '#B21B1D',
             borderRadius: 5,

@@ -14,14 +14,14 @@ const farmersData = [
   {id: 8, name: 'Farmer H', latitude: 27.488, longitude: 81.0022},
   {id: 9, name: 'Farmer I', latitude: 27.4885, longitude: 81.0025},
   {id: 10, name: 'Farmer J', latitude: 27.4887, longitude: 81.0019},
-  {id: 11, name: 'Farmer k', latitude: 27.4895, longitude: 81.0119},
+  {id: 11, name: 'Farmer K', latitude: 27.4895, longitude: 81.0119},
 ];
+
 const polygonCoords = [
   {latitude: 27.489, longitude: 81.001},
   {latitude: 27.4895, longitude: 81.001},
   {latitude: 27.4898, longitude: 81.002},
   {latitude: 27.4899, longitude: 81.0023},
-
   {latitude: 27.488, longitude: 81.0022},
 ];
 
@@ -49,14 +49,21 @@ const App = () => {
   };
 
   const filterFarmersWithinRadius = (latitude, longitude) => {
-    const filteredFarmers = farmersData.filter(farmer => {
+    const updatedFarmersData = farmersData.map(farmer => {
+      const randomLatitude = Math.random() * 0.024 + latitude;
+      const randomLongitude = Math.random() * 0.876 + longitude;
+      return {...farmer, latitude: randomLatitude, longitude: randomLongitude};
+    });
+    console.log(updatedFarmersData);
+
+    const filteredFarmers = updatedFarmersData.filter(farmer => {
       const distance = calculateDistance(
         latitude,
         longitude,
         farmer.latitude,
         farmer.longitude,
       );
-      return distance <= 1000;
+      return distance <= 5000; // Filter within 1000 meters
     });
 
     setFarmers(filteredFarmers);
