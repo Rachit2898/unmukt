@@ -31,6 +31,7 @@ import map from '../assets/map.png';
 import Cancel from '../assets/cancel.png';
 import Ok from '../assets/ok.png';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
 
 const BoldTextInput = ({
   label,
@@ -56,6 +57,7 @@ const BoldTextInput = ({
 };
 
 const VerifyForCyclePage = ({route}) => {
+  const navigation = useNavigation();
   const {farmerData, refreshFarmerList} = route.params;
   const farmerDetail = route.params.farmerDetails;
 

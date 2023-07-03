@@ -17,37 +17,7 @@ const SideMenu = () => {
   }, []);
   return (
     <View style={{backgroundColor: '#fff', flex: 1}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: '100%',
-          padding: 10,
-          marginRight: 10,
-          borderBottomWidth: 1,
-          marginBottom: 10,
-          backgroundColor: '#fff',
-        }}>
-        <Image
-          source={User}
-          onError={() => setImage(require('../assets/profile.png'))}
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 50,
-            borderWidth: 2,
-          }}
-        />
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#494c4c',
-          }}>
-          {userDetails.firstName} {userDetails.lastName}
-        </Text>
-      </View>
-      <View style={{padding: 10}}>
+      <View style={{padding: 10, marginTop: 20}}>
         <Pressable
           onPress={() => navigation.navigate('Comingsoon')}
           style={styles.div}>
@@ -117,22 +87,6 @@ const SideMenu = () => {
             Daily Transport Vehicle Reporting
           </Text>
         </Pressable>
-      </View>
-      <View
-        style={{
-          backgroundColor: '#B21B1D',
-          position: 'absolute',
-          bottom: 10,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '90%',
-          height: 50,
-          marginHorizontal: 10,
-          borderRadius: 5,
-        }}>
-        <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 16}}>
-          Logout
-        </Text>
       </View>
     </View>
   );

@@ -60,13 +60,6 @@ function MainApp({screen}) {
                 style={{height: 30, width: 30}}
                 resizeMode="contain"
               />
-              <Text
-                style={{
-                  fontSize: 20,
-                  color: '#B21B1D',
-                }}>
-                Back
-              </Text>
             </Pressable>
           ) : (
             <Pressable
