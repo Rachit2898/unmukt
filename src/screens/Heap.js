@@ -14,8 +14,11 @@ import MapView, {Marker, Polygon} from 'react-native-maps';
 import {TextInput} from '@react-native-material/core';
 import Geolocation from '@react-native-community/geolocation';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Picker} from '@react-native-picker/picker';
 import {ScrollView} from 'react-native-gesture-handler';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {useNavigation} from '@react-navigation/native';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const BoldTextInput = ({label, value, style, onChangeText}) => {
   return (
@@ -35,6 +38,7 @@ const BoldTextInput = ({label, value, style, onChangeText}) => {
 const Heap = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const navigation = useNavigation();
 
   const [farmerName, setFarmerName] = React.useState('');
   const [mobileNumber, setMobileNumber] = React.useState('');
@@ -43,6 +47,8 @@ const Heap = () => {
   const [kdName, setKdName] = React.useState('');
   const [price, setPrice] = React.useState('');
   const [dateOfDiscussion, setDateOfDiscussion] = React.useState('');
+  const [selectedCatchementArea, setSelectedCatchementArea] = useState(0);
+  const [catchementAreaList, setCatchementAreaList] = useState([]);
 
   const handleFarmerNameChange = text => {
     setFarmerName(text);
@@ -75,6 +81,13 @@ const Heap = () => {
   useEffect(() => {
     getLocationAsync();
   }, []);
+
+  const [addressCords, setAddressCords] = useState([
+    {
+      latitude: 0,
+      longitude: 0,
+    },
+  ]);
 
   const getLocationAsync = async () => {
     // Get the current location
@@ -199,112 +212,151 @@ const Heap = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View>
         <View style={styles.card}>
-          <BoldTextInput
+          <TextInput
             label="Farmer Name"
             value={farmerName}
-            onChangeText={handleFarmerNameChange}
+            variant="standard"
             style={{
               marginTop: 10,
             }}
+            onChangeText={handleFarmerNameChange}
           />
-          <BoldTextInput
+
+          <TextInput
             label="Mobile Number"
             value={mobileNumber}
             onChangeText={handleMobileNumberChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
-          <BoldTextInput
+
+          <TextInput
             label="Location"
             value={location}
             onChangeText={handleLocationChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
-          <BoldTextInput
+          <TextInput
             label="Land Size (Acres)"
             value={landSize}
             onChangeText={handleLandSizeChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
-          <BoldTextInput
+          <TextInput
             label="KD Name"
             value={kdName}
             onChangeText={handleKdNameChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
-          <BoldTextInput
+          <TextInput
             label="Price (Rs)"
             value={price}
             onChangeText={handlePriceChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
-          <BoldTextInput
+          <TextInput
             label="Date of Discussion"
             value={dateOfDiscussion}
             onChangeText={handleDateOfDiscussionChange}
             style={{
               marginTop: 10,
             }}
+            variant="standard"
           />
+
           <View
-            style={{marginTop: 10, borderBottomWidth: 0.5, paddingBottom: 5}}>
-            <Text style={styles.title}>Take Photo</Text>
-            <Pressable
-              style={{alignItems: 'center', justifyContent: 'center'}}
-              onPress={() =>
-                Alert.alert('Choose Type', '', [
-                  {
-                    text: 'Camera',
-                    onPress: () => opencamera(),
-                  },
-                  {
-                    text: 'Gallery',
-                    onPress: () => opencameragallery(),
-                  },
-                  {
-                    text: 'Cancel',
-                    onPress: () => {},
-                  },
-                ])
-              }>
-              {!photo ? (
-                <AntDesign name="camera" size={70} color="#B21B1D" />
-              ) : (
-                <Image
-                  style={{
-                    borderWidth: 1,
-                    width: '90%',
-                    height: 180,
-                    alignSelf: 'center',
-                  }}
-                  source={{uri: photo?._parts[0][1]?.name}}
-                />
-              )}
-            </Pressable>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: '100%',
+              paddingVertical: 20,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#000000',
+              }}>
+              Add Photo*
+            </Text>
+            <TouchableOpacity
+              style={{
+                width: 40,
+                height: 40,
+                backgroundColor: '#000000',
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 20,
+              }}
+              onPress={() => {
+                // select image from gallery
+                opencameragallery();
+              }}>
+              <AntDesign name="cloudupload" size={20} color="#ffffff" />
+            </TouchableOpacity>
+
+            {/* takePhoto() */}
+
+            <TouchableOpacity
+              style={{
+                width: 40,
+                height: 40,
+                backgroundColor: '#000000',
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginLeft: 20,
+              }}
+              onPress={() => {
+                // take photo from camera
+                opencamera();
+              }}>
+              <AntDesign name="camera" size={20} color="#ffffff" />
+            </TouchableOpacity>
           </View>
-          <View style={{marginTop: 10}}>
-            <Text style={styles.title}>Google Map Link</Text>
-            {currentLocation && (
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  latitude: currentLocation.latitude,
-                  longitude: currentLocation.longitude,
-                  latitudeDelta: 0.005,
-                  longitudeDelta: 0.005,
-                }}
-                mapType="satellite"></MapView>
-            )}
-          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              // if (isEditable){
+              navigation.navigate('MapsForPinLocation', {
+                setAddressCord: setAddressCords,
+              });
+              // }
+            }}
+            style={{
+              marginTop: 10,
+            }}>
+            <TextInput
+              label="Locate Farmer Address*"
+              variant="standard"
+              editable={false}
+              value={
+                addressCords.length > 0
+                  ? addressCords[0].latitude + ', ' + addressCords[0].longitude
+                  : ''
+              }
+              // icon on right side of text input
+              trailing={
+                <FontAwesome5 name="map-marked-alt" size={20} color="#B21B1D" />
+              }
+            />
+          </TouchableOpacity>
+
           <View
             style={{
               flexDirection: 'row',
