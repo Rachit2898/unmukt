@@ -88,7 +88,11 @@ const WeatherCard = () => {
   };
 
   if (!weatherData) {
-    return <Text>Loading...</Text>;
+    return (
+      <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+        Loading...
+      </Text>
+    );
   }
 
   const {

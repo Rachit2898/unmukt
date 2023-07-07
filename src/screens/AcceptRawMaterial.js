@@ -28,7 +28,6 @@ const AcceptRawMaterial = ({navigation, route}) => {
     useCallback(() => {
       Axios.get(`infradailyrecords/${collectionCycle}`)
         .then(res => {
-          console.log(res);
           if (res.data.length != 0) {
             setPendingIncoming(res.data);
             setRefreshing(false);
@@ -39,7 +38,6 @@ const AcceptRawMaterial = ({navigation, route}) => {
         .catch(err => {
           alert(`Error while completing action ${err?.message}`);
           setRefreshing(false);
-          console.log(err);
         });
     }, [collectionCycle, refreshing]),
   );
@@ -77,7 +75,7 @@ const AcceptRawMaterial = ({navigation, route}) => {
               state.splice(index, 1);
               return [...state];
             });
-            console.log(pendingIncoming, res);
+
             // navigation.goBack()
             alert('Data saved successfully');
           })

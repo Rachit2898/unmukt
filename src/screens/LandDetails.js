@@ -197,7 +197,9 @@ export default function LandDetails({navigation, route}) {
               />
             </Stack>
 
-            <Text>Map View</Text>
+            <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+              Map View
+            </Text>
 
             <MapView
               style={{width: '100%', height: 200}}

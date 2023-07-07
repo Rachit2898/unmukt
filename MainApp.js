@@ -14,6 +14,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {IconButton} from '@react-native-material/core';
 
 function MainApp({screen}) {
+  const Prod = 'Prod';
+  const Test = 'Test';
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isLoginValue = useSelector(state => state.login);
@@ -80,11 +82,20 @@ function MainApp({screen}) {
               />
             </Pressable>
           )}
-          <Image
-            source={require('./src/assets/icon.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Image
+              source={require('./src/assets/icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+              {__DEV__ ? Test : Prod}
+            </Text>
+          </View>
           <View style={styles.notificationIcon}>
             <Notification width={30} height={30} />
           </View>

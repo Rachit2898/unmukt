@@ -88,20 +88,25 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
           {item.catchmentName === 'Tora' ? (
             <View style={{alignItems: 'center', width: '20%'}}>
               <Image style={{height: 22, width: 22}} source={Verified} />
-              <Text style={{fontSize: 12, fontWeight: 'bold'}}>Verified</Text>
+              <Text style={{fontSize: 12, fontWeight: 'bold', color: 'gray'}}>
+                Verified
+              </Text>
             </View>
           ) : (
             <View style={{alignItems: 'center', width: '20%'}}>
               <Image style={{height: 20, width: 20}} source={UnVerified} />
-              <Text style={{fontSize: 12, fontWeight: 'bold'}}>UnVerified</Text>
+              <Text style={{fontSize: 12, fontWeight: 'bold', color: 'gray'}}>
+                Unverified
+              </Text>
             </View>
           )}
         </View>
         <Text
           style={{
-            fontSize: 20,
+            fontSize: 15,
             fontWeight: 'bold',
-            color: '#B21B1D',
+            color: '#494c4c',
+            marginTop: 8,
           }}>
           {item.catchmentName}
         </Text>
@@ -131,10 +136,10 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
             Mob: {item.mobileNo}
           </Text>
           <View>
-            <Text style={{fontSize: 12, fontWeight: 'bold'}}>
+            <Text style={{fontSize: 12, fontWeight: 'bold', color: 'gray'}}>
               Harvesting:Yes
             </Text>
-            <Text style={{fontSize: 12, fontWeight: 'bold'}}>
+            <Text style={{fontSize: 12, fontWeight: 'bold', color: 'gray'}}>
               Collection:Yes
             </Text>
           </View>

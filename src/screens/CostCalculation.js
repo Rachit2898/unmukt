@@ -28,7 +28,9 @@ const CostCalculationScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Cost Calculation</Text>
       <View style={styles.inputContainer}>
-        <Text>Vehicle Type:</Text>
+        <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+          Vehicle Type:
+        </Text>
         <Picker
           style={styles.picker}
           selectedValue={vehicleType}

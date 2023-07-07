@@ -590,26 +590,28 @@ export default function Home() {
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Farmers</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Farmers
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.farmers_count ? sourceData?.farmers_count : 0}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Land Onboarded
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.land_onboarded ? sourceData?.land_onboarded : 0}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Total Land (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.total_land_in_acres
                     ? sourceData?.total_land_in_acres
                     : 0}
@@ -629,19 +631,19 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Harvesting Completed (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.area_harvested ? sourceData?.area_harvested : 0}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Harvesting Done by Farmer (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.area_harvested_by_farmers
                     ? sourceData?.area_harvested_by_farmers
                     : 0}
@@ -649,10 +651,10 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Harvesting in Progress (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.area_harvesting_in_progress
                     ? sourceData?.area_harvesting_in_progress
                     : 0}
@@ -660,10 +662,10 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Farmers who used their Harvesters
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.harvesting_by_farmers
                     ? sourceData?.harvesting_by_farmers
                     : 0}
@@ -671,10 +673,10 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Farmer who used USPL Harvesters
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.harvesting_by_uspl
                     ? sourceData?.harvesting_by_uspl
                     : 0}
@@ -694,30 +696,30 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Farmer Impacted
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.farmer_impacted_count_h
                     ? sourceData?.farmer_impacted_count_h
                     : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Land Parcel Impacted
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.land_parcel_impacted_count_h
                     ? sourceData?.land_parcel_impacted_count_h
                     : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Land Impacted (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.land_impacted_in_acres_h
                     ? sourceData?.land_impacted_in_acres_h
                     : 0}
@@ -736,48 +738,60 @@ export default function Home() {
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Harvester
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.harvester_count
                     ? sourceData?.harvester_count
                     : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Tractor</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Tractor
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.tractor_count ? sourceData?.tractor_count : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Baler</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Baler
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.baler_count ? sourceData?.baler_count : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Reaper</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Reaper
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.reaper_count ? sourceData?.reaper_count : 0}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Pickup</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Pickup
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.racker_count}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Rickshaw</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Rickshaw
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.rickshaw_count}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>Racker</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+                  Racker
+                </Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.racker_count}
                 </Text>
               </View>
@@ -794,53 +808,53 @@ export default function Home() {
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Area Collected (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.area_collected}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Collection In Progress (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.area_collection_in_progress}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Bales Count
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.count_of_bales}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Bales Collected (Tons)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.bales_collected}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Loose material collected (Tons)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.loose_rm_collected}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Total Material Collected (Tons)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.material_collected}
                 </Text>
               </View>
@@ -858,27 +872,27 @@ export default function Home() {
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Farmer Impacted
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.farmer_impacted_count_c}
                 </Text>
               </View>
 
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Land Parcel (Impacted)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.land_parcel_impacted_count_c}
                 </Text>
               </View>
               <View style={styles.div}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   Land Impacted (Acres)
                 </Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
                   {sourceData?.land_impacted_in_acres_c}
                 </Text>
               </View>

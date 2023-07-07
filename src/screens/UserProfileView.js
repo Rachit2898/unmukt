@@ -13,12 +13,16 @@ import {useDispatch} from 'react-redux';
 import {isLogin} from '../Redux-Files/loginSlice';
 import {useNavigation} from '@react-navigation/native';
 import User from '../assets/user.png';
+import DeviceInfo from 'react-native-device-info';
 
 export default function UserProfileView() {
+  const appVersion = DeviceInfo.getVersion();
   const [userDetails, setUserDetails] = useState({});
   const [image, setImage] = useState('');
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  console.log(appVersion);
 
   useEffect(() => {
     AsyncStorage.getItem('profile').then(profile => {
@@ -112,7 +116,7 @@ export default function UserProfileView() {
             backgroundColor: '#B21B1D',
             borderRadius: 5,
             height: 50,
-            marginVertical: 40,
+            marginTop: 40,
             justifyContent: 'center',
           }}
           onPress={() => {
@@ -131,6 +135,14 @@ export default function UserProfileView() {
             Logout
           </Text>
         </Pressable>
+        <View
+          style={{
+            marginVertical: 20,
+
+            marginBottom: 40,
+          }}>
+          <Text style={{color: 'gray'}}>App Version: {appVersion}</Text>
+        </View>
       </ScrollView>
     </View>
   );
