@@ -73,13 +73,16 @@ export default function AddFarmerLand({navigation, route}) {
     redirect = false,
     imageUri,
   } = route.params;
-  console.log('first', route.params);
+  console.log('first', landDetails);
   const [showPopup, setShowPopup] = useState(false);
   const [farmDetailsAdded, setfarmDetailsAdded] = useState(false);
   const [isEditable, setIsEditable] = useState(!isViewMode);
+  const [collectionData, setCollectionData] = useState('');
 
   const [shouldShowShowing, setShouldShowShowing] = useState(true);
   const [collectionCycle, setCollectionCycle] = useState('');
+
+  console.log({collectionCycle});
 
   const [token, setToken] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -128,23 +131,46 @@ export default function AddFarmerLand({navigation, route}) {
     fetchLocation();
   }, []);
 
-  console.log({locations});
-
   useEffect(() => {
-    var collectionCycle = '';
-    // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
-    var today = new Date();
-    var currentMonth = today.getMonth();
-    var currentYear = today.getFullYear();
-    if (currentMonth >= 0 && currentMonth <= 6) {
-      collectionCycle = 'June' + '-' + currentYear;
-    } else if (currentMonth >= 7 && currentMonth <= 11) {
-      collectionCycle = 'December' + '-' + currentYear;
-    }
-    setCollectionCycle(collectionCycle);
+    const fetchFarmerLands = () => {
+      // get list of farmer lands
+      Axios.get(`/refCollectionCycle`)
+        .then(function (response) {
+          // check if response is 200
+          if (response.status !== 200) {
+            alert('Error fetching farmer lands');
+            return;
+          }
+          //  console.log(response.data, 'resssssssssssssssssss');
+          setCollectionData(response.data);
+          setCollectionCycle(response?.data?.collectionCycle);
+        })
+        .catch(function (error) {
+          console.log(error);
+          //  console.log(error.response);
+          alert('Error fetching farmer lands');
+        });
+    };
+
+    fetchFarmerLands();
   }, []);
 
+  // useEffect(() => {
+  //   var collectionCycle = '';
+  //   // If the current date is between 15th Jan to 15th July then it is June-2023 (and then June-2024, June-2025 ....) and if the current date is between 16th July to 14th Jan then it would be Dec-2023 (and then Dec-2024 ...Dec-2025) ...
+  //   var today = new Date();
+  //   var currentMonth = today.getMonth();
+  //   var currentYear = today.getFullYear();
+  //   if (currentMonth >= 0 && currentMonth <= 6) {
+  //     collectionCycle = 'June' + '-' + currentYear;
+  //   } else if (currentMonth >= 7 && currentMonth <= 11) {
+  //     collectionCycle = 'December' + '-' + currentYear;
+  //   }
+  //   setCollectionCycle(collectionCycle);
+  // }, []);
+
   useEffect(() => {
+    console.log({landId});
     if (collectionCycle && isViewMode) {
       Axios.get(`landCollectionDetails/${landId}/${collectionCycle}`)
         .then(res => {
@@ -596,6 +622,21 @@ export default function AddFarmerLand({navigation, route}) {
     {label: 'OWNED', value: 'Owned'},
     {label: 'LEASED', value: 'Leased'},
   ];
+
+  function formatDateToCustomFormat(dateString, format) {
+    const date = new Date(dateString);
+
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+
+    format = format.replace('dd', day);
+    format = format.replace('mm', month);
+    format = format.replace('yyyy', year);
+
+    return format;
+  }
+
   return (
     <View
       style={{
@@ -657,23 +698,18 @@ export default function AddFarmerLand({navigation, route}) {
               padding: 10,
               borderRadius: 5,
             }}>
-            <Image
-              source={{uri: imageUri}}
+            <View
               style={{
-                width: 110,
-                height: 125,
-                marginHorizontal: 10,
-                borderRadius: 2,
-              }}
-            />
-
-            <View style={{width: '100%'}}>
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
               <View
                 style={{
                   flexDirection: 'column',
                   alignContent: 'center',
                   marginTop: 10,
-                  width: '70%',
+                  width: '55%',
                   paddingHorizontal: 10,
                 }}>
                 <View
@@ -683,16 +719,20 @@ export default function AddFarmerLand({navigation, route}) {
                   }}>
                   <Text
                     style={{
-                      fontSize: 25,
+                      fontSize: 18,
                       fontWeight: 'bold',
                       color: '#B21B1D',
                     }}>
                     {farmerName}
                   </Text>
-                  {landDetails.catchmentName === 'Tora' ? (
-                    <View style={{alignItems: 'center', width: '20%'}}>
+                  {landDetails?.verified ? (
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        width: '20%',
+                      }}>
                       <Image
-                        style={{height: 22, width: 22}}
+                        style={{height: 20, width: 20}}
                         source={Verified}
                       />
                     </View>
@@ -715,37 +755,40 @@ export default function AddFarmerLand({navigation, route}) {
                   UID: {farmerId}
                 </Text>
               </View>
-              <Pressable
-                onPress={() =>
-                  navigation.navigate('VerifyLand', {
-                    fetchFarmerLands: fetchFarmerLands,
-                    farmerId,
-                    farmerName,
-                    landDetails,
-                    isViewMode: true,
-                    imageUri,
-                  })
-                }
-                style={{
-                  alignContent: 'center',
-                  marginTop: 10,
-                  width: '55%',
-                  paddingHorizontal: 10,
-                  backgroundColor: '#B21B1D',
-                  borderRadius: 5,
-                  justifyContent: 'center',
-                }}>
-                <Text
+
+              {!landDetails?.verified ? (
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate('VerifyLand', {
+                      fetchFarmerLands: fetchFarmerLands,
+                      farmerId,
+                      farmerName,
+                      landDetails,
+                      isViewMode: true,
+                      imageUri,
+                      landDetails,
+                    })
+                  }
                   style={{
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    textAlign: 'center',
-                    padding: 10,
+                    alignContent: 'center',
+                    marginTop: 10,
+
+                    paddingHorizontal: 5,
+                    backgroundColor: '#B21B1D',
+                    borderRadius: 5,
+                    justifyContent: 'center',
                   }}>
-                  Verify for current cycle
-                </Text>
-              </Pressable>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      color: '#fff',
+                      textAlign: 'center',
+                    }}>
+                    Verify for current cycle
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
           </View>
         </View>
@@ -1191,12 +1234,12 @@ export default function AddFarmerLand({navigation, route}) {
                         label="Date of Sowing"
                         variant="standard"
                         value={
-                          // convert date to string
-                          showingDate.getDate() +
-                          '/' +
-                          (showingDate.getMonth() + 1) +
-                          '/' +
-                          showingDate.getFullYear()
+                          showingData?.sowing_date
+                            ? formatDateToCustomFormat(
+                                showingData?.sowing_date,
+                                customFormat,
+                              )
+                            : ''
                         }
                         style={{
                           marginTop: 10,
@@ -1242,12 +1285,12 @@ export default function AddFarmerLand({navigation, route}) {
                           marginTop: 10,
                         }}
                         value={
-                          // convert date to string
-                          harvestingDate.getDate() +
-                          '/' +
-                          (harvestingDate.getMonth() + 1) +
-                          '/' +
-                          harvestingDate.getFullYear()
+                          showingData?.expectedHarvestingDate
+                            ? formatDateToCustomFormat(
+                                showingData?.expectedHarvestingDate,
+                                customFormat,
+                              )
+                            : ''
                         }
                         editable={shouldShowShowing}
                         // icon on right side of text input
@@ -1389,7 +1432,7 @@ export default function AddFarmerLand({navigation, route}) {
             }}>
             <View
               style={{
-                marginTop: 30,
+                marginVertical: 20,
                 flexDirection: 'column',
               }}>
               <TouchableOpacity
@@ -1479,14 +1522,23 @@ export default function AddFarmerLand({navigation, route}) {
                     profile={profile}
                     landDetails={landDetails}
                     farmerId={farmerId}
-                    collectionCycle={collectionCycle}
+                    collectionCycle={collectionData?.collectionCycle}
                   />
                 ))}
             </View>
+          </View>
 
+          <View
+            style={{
+              flexDirection: 'column',
+              backgroundColor: '#fff',
+              padding: 10,
+              borderRadius: 5,
+              marginTop: 10,
+            }}>
             <View
               style={{
-                marginTop: 30,
+                marginVertical: 20,
                 flexDirection: 'column',
               }}>
               <TouchableOpacity

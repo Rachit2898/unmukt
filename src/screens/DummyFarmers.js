@@ -1,53 +1,265 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Button} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import MapView, {Marker, Polygon} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
 const farmersData = [
   {
-    id: 1,
-    name: 'Farmer A',
-    latitude: 27.48063651010104,
-    longitude: 80.99966660141945,
+    id: 8020,
+    latitude: 21.351890002205245,
+    longitude: 83.71899068355559,
+    name: 'Farmer 8020',
   },
   {
-    id: 2,
-    name: 'Farmer B',
-    latitude: 27.48136316793982,
-    longitude: 80.99891189485788,
+    id: 8021,
+    latitude: 21.35234621832163,
+    longitude: 83.71957574039699,
+    name: 'Farmer 8021',
   },
   {
-    id: 3,
-    name: 'Farmer C',
-    latitude: 27.48194972574425,
-    longitude: 80.99948689341545,
+    id: 8022,
+    latitude: 21.35308409257989,
+    longitude: 83.71968202292919,
+    name: 'Farmer 8022',
   },
   {
-    id: 4,
-    name: 'Farmer D',
-    latitude: 27.481312899909646,
-    longitude: 81.00035324692726,
+    id: 8023,
+    latitude: 21.35340259830606,
+    longitude: 83.71977690607311,
+    name: 'Farmer 8023',
+  },
+  {
+    id: 8024,
+    latitude: 21.35366833147538,
+    longitude: 83.71966022998096,
+    name: 'Farmer 8024',
+  },
+  {
+    id: 8025,
+    latitude: 21.353812595344348,
+    longitude: 83.71968504041433,
+    name: 'Farmer 8025',
+  },
+  {
+    id: 8026,
+    latitude: 21.353819777308143,
+    longitude: 83.7193152308464,
+    name: 'Farmer 8026',
+  },
+  {
+    id: 8027,
+    latitude: 21.353633046135162,
+    longitude: 83.71919352561235,
+    name: 'Farmer 8027',
+  },
+  {
+    id: 8028,
+    latitude: 21.35372516271344,
+    longitude: 83.7190540507436,
+    name: 'Farmer 8028',
+  },
+  {
+    id: 8029,
+    latitude: 21.353919387987045,
+    longitude: 83.71907249093056,
+    name: 'Farmer 8029',
+  },
+  {
+    id: 8030,
+    latitude: 21.353928755759007,
+    longitude: 83.71881801635027,
+    name: 'Farmer 8030',
+  },
+  {
+    id: 8031,
+    latitude: 21.353944056451923,
+    longitude: 83.71859908103944,
+    name: 'Farmer 8031',
+  },
+  {
+    id: 8032,
+    latitude: 21.35395717133029,
+    longitude: 83.71829900890589,
+    name: 'Farmer 8032',
+  },
+  {
+    id: 8033,
+    latitude: 21.353749206692136,
+    longitude: 83.71750943362713,
+    name: 'Farmer 8033',
+  },
+  {
+    id: 8034,
+    latitude: 21.353803852083608,
+    longitude: 83.71712353080511,
+    name: 'Farmer 8034',
+  },
+  {
+    id: 8035,
+    latitude: 21.35351001576743,
+    longitude: 83.71671080589293,
+    name: 'Farmer 8035',
+  },
+  {
+    id: 8036,
+    latitude: 21.353565910287404,
+    longitude: 83.71639229357243,
+    name: 'Farmer 8036',
+  },
+  {
+    id: 8037,
+    latitude: 21.353591827850874,
+    longitude: 83.71587932109833,
+    name: 'Farmer 8037',
+  },
+  {
+    id: 8038,
+    latitude: 21.353072538927794,
+    longitude: 83.71575057506561,
+    name: 'Farmer 8038',
+  },
+  {
+    id: 8039,
+    latitude: 21.352912661270135,
+    longitude: 83.71552225202322,
+    name: 'Farmer 8039',
+  },
+  {
+    id: 8040,
+    latitude: 21.352294070486977,
+    longitude: 83.7154545262456,
+    name: 'Farmer 8040',
+  },
+  {
+    id: 8041,
+    latitude: 21.35212794672239,
+    longitude: 83.71601577848196,
+    name: 'Farmer 8041',
+  },
+  {
+    id: 8042,
+    latitude: 21.351591165827443,
+    longitude: 83.71601443737744,
+    name: 'Farmer 8042',
+  },
+  {
+    id: 8043,
+    latitude: 21.35131512415966,
+    longitude: 83.71627192944287,
+    name: 'Farmer 8043',
+  },
+  {
+    id: 8044,
+    latitude: 21.349234802470747,
+    longitude: 83.7146894261241,
+    name: 'Farmer 8044',
+  },
+  {
+    id: 8045,
+    latitude: 21.348594649508012,
+    longitude: 83.71626555919647,
+    name: 'Farmer 8045',
+  },
+  {
+    id: 8046,
+    latitude: 21.34874422696277,
+    longitude: 83.71892631053925,
+    name: 'Farmer 8046',
+  },
+  {
+    id: 8047,
+    latitude: 21.349765971172722,
+    longitude: 83.71911976486444,
+    name: 'Farmer 8047',
+  },
+  {
+    id: 8048,
+    latitude: 21.35107093302017,
+    longitude: 83.71856153011322,
+    name: 'Farmer 8048',
   },
 ];
 
-const polygonCoords = [
-  {latitude: 27.489, longitude: 81.001},
-  {latitude: 27.4895, longitude: 81.001},
-  {latitude: 27.4898, longitude: 81.002},
-  {latitude: 27.4899, longitude: 81.0023},
+const res = [
+  [83.71899068355559, 21.351890002205245],
+  [83.71957574039699, 21.35234621832163],
+  [83.71968202292919, 21.35308409257989],
+  [83.71977690607311, 21.35340259830606],
+  [83.71966022998096, 21.35366833147538],
+  [83.71968504041433, 21.353812595344348],
+  [83.7193152308464, 21.353819777308143],
+  [83.71919352561235, 21.353633046135162],
+  [83.7190540507436, 21.35372516271344],
+  [83.71907249093056, 21.353919387987045],
+  [83.71881801635027, 21.353928755759007],
+  [83.71859908103944, 21.353944056451923],
+  [83.71829900890589, 21.35395717133029],
+  [83.71750943362713, 21.353749206692136],
+  [83.71712353080511, 21.353803852083608],
+  [83.71671080589293, 21.35351001576743],
+  [83.71639229357243, 21.353565910287404],
+  [83.71587932109833, 21.353591827850874],
+  [83.71575057506561, 21.353072538927794],
+  [83.71552225202322, 21.352912661270135],
+  [83.7154545262456, 21.352294070486977],
+  [83.71601577848196, 21.35212794672239],
+  [83.71601443737744, 21.351591165827443],
+  [83.71627192944287, 21.35131512415966],
+  [83.7146894261241, 21.349234802470747],
+  [83.71626555919647, 21.348594649508012],
+  [83.71892631053925, 21.34874422696277],
+  [83.71911976486444, 21.349765971172722],
+  [83.71856153011322, 21.35107093302017],
+];
 
-  {latitude: 27.488, longitude: 81.0022},
+const data = [
+  [
+    802,
+    '[[83.71899068355559,21.351890002205245],[83.71957574039699,21.35234621832163],[83.71968202292919,21.35308409257989],[83.71977690607311,21.35340259830606],[83.71966022998096,21.35366833147538],[83.71968504041433,21.353812595344348],[83.7193152308464,21.353819777308143],[83.71919352561235,21.353633046135162],[83.7190540507436,21.35372516271344],[83.71907249093056,21.353919387987045],[83.71881801635027,21.353928755759007],[83.71859908103944,21.353944056451923],[83.71829900890589,21.35395717133029],[83.71750943362713,21.353749206692136],[83.71712353080511,21.353803852083608],[83.71671080589293,21.35351001576743],[83.71639229357243,21.353565910287404],[83.71587932109833,21.353591827850874],[83.71575057506561,21.353072538927794],[83.71552225202322,21.352912661270135],[83.7154545262456,21.352294070486977],[83.71601577848196,21.35212794672239],[83.71601443737744,21.351591165827443],[83.71627192944287,21.35131512415966],[83.7146894261241,21.349234802470747],[83.71626555919647,21.348594649508012],[83.71892631053925,21.34874422696277],[83.71911976486444,21.349765971172722],[83.71856153011322,21.35107093302017]]',
+  ],
+  [
+    803,
+    '[[83.71538512408733,21.351910611588163],[83.7154733017087,21.35222474818705],[83.71580354869367,21.352152615488812],[83.71602550148963,21.352100779848232],[83.71615692973137,21.35247237228797],[83.71621459722519,21.352712813952802],[83.71647577732801,21.35308627840587],[83.7163782119751,21.35333452557177],[83.71637988835573,21.353544364357642],[83.7165056169033,21.354034923799404],[83.71646907180548,21.3543412493907],[83.7160325422883,21.35444117197311],[83.7159001082182,21.354129538194112],[83.7157566100359,21.354309086794995],[83.71543675661087,21.354368728107655],[83.71522083878517,21.354595115068303],[83.715098798275,21.354990744958517],[83.71481247246265,21.355082548426758],[83.71456135064363,21.35494390643214],[83.71431156992912,21.354941720633875],[83.71407318860292,21.3546391433883],[83.71340431272984,21.355098161255775],[83.7128759175539,21.355134695269168],[83.71248129755257,21.3549454677166],[83.71207494288682,21.3538731736366],[83.71330976486206,21.3538513154928]]',
+  ],
+  [
+    804,
+    '[[83.71933098882437,21.348498782457796],[83.71913585811853,21.3493515910512],[83.71828895062208,21.34947462490962],[83.71781185269357,21.34989462550116],[83.7174041569233,21.35022437976907],[83.71639598160982,21.349799383836835],[83.71624611318113,21.349535517263277],[83.71584009379148,21.349557688319102],[83.71573381125927,21.349737867056827],[83.7154022231698,21.349664796330273],[83.71490366756916,21.349871829960904],[83.71468406170605,21.34955862512421],[83.7146183475852,21.349036511486027],[83.71569391340017,21.34868895514445],[83.71579851955175,21.34818557468733],[83.71689051389693,21.347133841205796],[83.7191915139556,21.34766876478941]]',
+  ],
+  [
+    809,
+    '[[83.69833365082741,21.35203458008783],[83.69756452739239,21.351738242114607],[83.697764351964,21.351351034587037],[83.69806107133627,21.35154057904488],[83.69841881096363,21.35117398048159],[83.69834002107382,21.35109029345785],[83.69907528162003,21.350524155732522],[83.69928449392319,21.350790830918026],[83.69926773011684,21.350987245937592],[83.69973845779896,21.351138070010844],[83.6998149007559,21.351509977155587],[83.7003144621849,21.351632072410453],[83.70084721595049,21.35169390065928],[83.70078183710575,21.352461130849832],[83.6991661414504,21.352382440758706]]',
+  ],
+  [
+    810,
+    '[[83.7000023201108,21.349671353961057],[83.70163645595314,21.347963861902922],[83.7024273723364,21.347597566666714],[83.70288234204054,21.347950121944688],[83.70293095707893,21.349043693683864],[83.70268888771534,21.34938875103455],[83.7022215127945,21.349439650828394],[83.70212730020285,21.349668543547892],[83.70211489498615,21.349923978657362],[83.70213702321053,21.35022750243852],[83.7018956243992,21.35026997073637],[83.70171558111906,21.350279026474777],[83.70137125253677,21.35039518969005],[83.70091125369072,21.350585359916344],[83.70068527758121,21.350550386100146],[83.70051495730877,21.35066498777034],[83.7003520131111,21.35068903225106],[83.70031278580429,21.350978502508298],[83.6999811977148,21.351039394237205],[83.69975857436656,21.350727128693],[83.70010659098625,21.35020658055196]]',
+  ],
 ];
 
 const App = () => {
   const [farmers, setFarmers] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [landCoordinates, setLandCoordinates] = useState([]);
-  const [newFarmCoordinates, setNewFarmCoordinates] = useState([]);
 
   useEffect(() => {
     getLocationAsync();
   }, []);
+
+  const res = data.map(item => {
+    const id = item[0];
+    const coordinatesString = item[1];
+    const coordinates = JSON.parse(coordinatesString);
+
+    const mappedCoordinates = coordinates.map(coord => {
+      return {
+        latitude: coord[1],
+        longitude: coord[0],
+      };
+    });
+
+    return {
+      id: id,
+      coordinates: mappedCoordinates,
+    };
+  });
 
   const getLocationAsync = async () => {
     // Get the current location
@@ -65,14 +277,21 @@ const App = () => {
   };
 
   const filterFarmersWithinRadius = (latitude, longitude) => {
-    const filteredFarmers = farmersData.filter(farmer => {
+    const updatedFarmersData = farmersData.map(farmer => {
+      const randomLatitude = Math.random() * 0.024 + latitude;
+      const randomLongitude = Math.random() * 0.876 + longitude;
+      return {...farmer, latitude: randomLatitude, longitude: randomLongitude};
+    });
+    console.log(updatedFarmersData);
+
+    const filteredFarmers = updatedFarmersData.filter(farmer => {
       const distance = calculateDistance(
         latitude,
         longitude,
         farmer.latitude,
         farmer.longitude,
       );
-      return distance <= 1000;
+      return distance <= 5000; // Filter within 1000 meters
     });
 
     setFarmers(filteredFarmers);
@@ -97,66 +316,6 @@ const App = () => {
   const toRad = value => {
     return (value * Math.PI) / 180;
   };
-  const handleAddLandCoordinate = (latitude, longitude) => {
-    const newCoordinate = {latitude, longitude};
-    setLandCoordinates(prevCoordinates => [...prevCoordinates, newCoordinate]);
-  };
-
-  const addNewFarm = () => {
-    setNewFarmCoordinates([...newFarmCoordinates, landCoordinates]);
-  };
-
-  const isPointInsidePolygon = (point, polygon) => {
-    const [x, y] = point;
-    let inside = false;
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      const [polyX, polyY] = polygon[i];
-      const [prevPolyX, prevPolyY] = polygon[j];
-      const intersect =
-        polyY > y !== prevPolyY > y &&
-        x < ((prevPolyX - polyX) * (y - polyY)) / (prevPolyY - polyY) + polyX;
-      if (intersect) inside = !inside;
-    }
-    return inside;
-  };
-
-  // ...
-
-  const checkOverlap = () => {
-    if (newFarmCoordinates.length > 0 && landCoordinates.length > 0) {
-      const newFarmPolygon = newFarmCoordinates[0].map(coord => [
-        coord.latitude,
-        coord.longitude,
-      ]);
-      for (const existingFarm of farmersData) {
-        const existingFarmPolygon = farmersData.map(coord => [
-          coord.latitude,
-          coord.longitude,
-        ]);
-        let overlap = false;
-
-        for (const coordinate of newFarmPolygon) {
-          if (isPointInsidePolygon(coordinate, existingFarmPolygon)) {
-            overlap = true;
-            break;
-          }
-        }
-
-        if (overlap) {
-          alert('Newly added farm overlaps with existing farm');
-          // Perform any additional actions here
-        } else {
-          alert('Newly farm added ');
-        }
-      }
-    }
-  };
-
-  // ...
-
-  useEffect(() => {
-    checkOverlap();
-  }, [newFarmCoordinates]);
 
   return (
     <View style={styles.container}>
@@ -164,37 +323,24 @@ const App = () => {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
+            latitude: 21.35234621832163,
+            longitude: 83.71957574039699,
             latitudeDelta: 0.005,
             longitudeDelta: 0.005,
           }}
-          mapType="satellite"
-          onPress={event => {
-            const {latitude, longitude} = event.nativeEvent.coordinate;
-            handleAddLandCoordinate(latitude, longitude);
-          }}>
-          {farmers.map(farmer => (
-            <Marker
-              key={farmer.id}
-              coordinate={{
-                latitude: farmer.latitude,
-                longitude: farmer.longitude,
-              }}
-              title={farmer.name}
-            />
-          ))}
-          {landCoordinates.map((coordinate, index) => (
-            <Marker
-              key={index}
-              coordinate={coordinate}
-              pinColor="blue" // Optionally, customize the marker color
-            />
-          ))}
-          {polygonCoords.length > 0 && <Polygon coordinates={polygonCoords} />}
+          mapType="satellite">
+          {res.map(item => {
+            <>
+              {console.log(item?.coordinates[0])}
+              {/* {item.coordinates.map(coord => {
+                <> */}
+              <Polygon coordinates={item?.coordinates[0]} />;
+              {/* </>;
+              })} */}
+            </>;
+          })}
         </MapView>
       )}
-      <Button title="Add Farm" onPress={addNewFarm} />
     </View>
   );
 };

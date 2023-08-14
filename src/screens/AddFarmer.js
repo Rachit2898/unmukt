@@ -321,7 +321,7 @@ export default function AddFarmer({navigation, route}) {
         alert('Please enter valid mobile number');
         return;
       }
-      console.log(data);
+
       Axios.post(`${baseURL}/farmer`, data, {
         headers: {
           Authorization: 'Bearer ' + token,

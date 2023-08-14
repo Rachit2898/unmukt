@@ -88,6 +88,14 @@ const SideMenu = () => {
           </Text>
         </Pressable>
       </View>
+      <View style={{position: 'absolute', bottom: 10, left: 10}}>
+        <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+          App Version: {1}
+        </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 16, color: 'gray'}}>
+          Environment : {__DEV__ ? 'Test' : 'Prod'}
+        </Text>
+      </View>
     </View>
   );
 };

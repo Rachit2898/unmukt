@@ -3,6 +3,8 @@ import axios from 'axios';
 import RNRestart from 'react-native-restart';
 import baseURL from '../Config';
 
+console.log({baseURL});
+
 const instance = axios.create({
   baseURL: baseURL,
 });

@@ -56,6 +56,7 @@ const BoldTextInput = ({
 
 export default function FarmerProfile({navigation, route}) {
   const {farmerData, refreshFarmerList} = route.params;
+
   const [isEditable, setIsEditable] = useState(false);
 
   const [addressCords, setAddressCords] = useState([
@@ -214,19 +215,19 @@ export default function FarmerProfile({navigation, route}) {
     // return
 
     // return
-    Axios.get(`/images/${farmerDetails.imageDetails.id}`)
-      .then(async function (response) {
-        // check if response is 200
-        if (response.status !== 200) {
-          alert('Error fetching image');
-          return;
-        }
-        const objectURL = `data:image/png;base64,${response.data.image}`;
-        setImageUri(objectURL);
-      })
-      .catch(function (error) {
-        alert('Error fetching image');
-      });
+    // Axios.get(`/images/${farmerDetails.imageDetails.id}`)
+    //   .then(async function (response) {
+    //     // check if response is 200
+    //     if (response.status !== 200) {
+    //       alert('Error fetching image');
+    //       return;
+    //     }
+    //     const objectURL = `data:image/png;base64,${response.data.image}`;
+    //     setImageUri(objectURL);
+    //   })
+    //   .catch(function (error) {
+    //     alert('Error fetching image');
+    //   });
   }, []);
 
   const selectFile = async () => {
@@ -304,7 +305,7 @@ export default function FarmerProfile({navigation, route}) {
     {label: 'Yes', value: 'Yes'},
     {label: 'No', value: 'No'},
   ];
-
+  console.log('ansbcvgcvgdwcvdewc', farmerData?.verified);
   return (
     <SafeAreaView
       style={{
@@ -329,7 +330,7 @@ export default function FarmerProfile({navigation, route}) {
               padding: 10,
               borderRadius: 5,
             }}>
-            <Image
+            {/* <Image
               source={{uri: imageUri}}
               style={{
                 width: 110,
@@ -337,7 +338,7 @@ export default function FarmerProfile({navigation, route}) {
                 marginHorizontal: 10,
                 borderRadius: 2,
               }}
-            />
+            /> */}
 
             <View style={{width: '100%'}}>
               <View
@@ -387,30 +388,32 @@ export default function FarmerProfile({navigation, route}) {
                   UID: {farmerData.farmerUid}
                 </Text>
               </View>
-              <Pressable
-                onPress={() =>
-                  navigation.navigate('Verify', {farmerData: farmerData})
-                }
-                style={{
-                  flexDirection: 'column',
-                  alignContent: 'center',
-                  marginTop: 10,
-                  width: '55%',
-                  paddingHorizontal: 10,
-                  backgroundColor: '#B21B1D',
-                  borderRadius: 5,
-                }}>
-                <Text
+              {!farmerData?.verified ? (
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate('Verify', {farmerData: farmerData})
+                  }
                   style={{
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    textAlign: 'center',
-                    padding: 10,
+                    flexDirection: 'column',
+                    alignContent: 'center',
+                    marginTop: 10,
+                    width: '55%',
+                    paddingHorizontal: 10,
+                    backgroundColor: '#B21B1D',
+                    borderRadius: 5,
                   }}>
-                  Verify for current cycle
-                </Text>
-              </Pressable>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: '#fff',
+                      textAlign: 'center',
+                      padding: 10,
+                    }}>
+                    Verify for current cycle
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
           </View>
           {/* make a line seperator */}
@@ -1085,7 +1088,8 @@ export default function FarmerProfile({navigation, route}) {
                           }}>
                           Catchment Area ({farmerDetails.catchmentName})
                         </Text>
-                        {farmerDetails.catchmentName === 'Tora' ? (
+
+                        {item?.verified ? (
                           <View style={{alignItems: 'center', width: '20%'}}>
                             <Image
                               style={{height: 22, width: 22}}

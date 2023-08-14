@@ -47,9 +47,32 @@ const Infra = ({navigation, route, ...props}) => {
       } else if (currentMonth >= 7 && currentMonth <= 11) {
         collectionCycle = 'December' + '-' + currentYear;
       }
-      setCollectionCycle(collectionCycle);
     }, []),
   );
+
+  useEffect(() => {
+    const fetchFarmerLands = () => {
+      // get list of farmer lands
+      Axios.get(`/refCollectionCycle`)
+        .then(function (response) {
+          // check if response is 200
+          if (response.status !== 200) {
+            alert('Error fetching farmer lands');
+            return;
+          }
+          //  console.log(response.data, 'resssssssssssssssssss');
+
+          setCollectionCycle(response?.data?.collectionCycle);
+        })
+        .catch(function (error) {
+          console.log(error);
+          //  console.log(error.response);
+          alert('Error fetching farmer lands');
+        });
+    };
+
+    fetchFarmerLands();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

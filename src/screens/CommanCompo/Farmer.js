@@ -85,7 +85,7 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
               {item.firstName} {item.lastName}
             </Text>
           </View>
-          {item.catchmentName === 'Tora' ? (
+          {item?.verified ? (
             <View style={{alignItems: 'center', width: '20%'}}>
               <Image style={{height: 22, width: 22}} source={Verified} />
               <Text style={{fontSize: 12, fontWeight: 'bold', color: 'gray'}}>
@@ -108,7 +108,7 @@ export default function Farmer({navigation, item, refreshFarmerList}) {
             color: '#494c4c',
             marginTop: 8,
           }}>
-          {item.catchmentName}
+          Catchment: {item.catchmentName}
         </Text>
         <Text
           style={{

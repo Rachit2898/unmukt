@@ -39,6 +39,7 @@ import upDown from '../assets/upDown.png';
 import dropDown from '../assets/dropDown.png';
 import Verified from '../assets/verified.png';
 import UnVerified from '../assets/unverified.png';
+import baseURL from '../Config';
 
 const BoldTextInput = ({
   label,
@@ -73,7 +74,7 @@ export default function AddFarmerLand({navigation, route}) {
     redirect = false,
     imageUri,
   } = route.params;
-  console.log('second', route.params);
+
   const [showPopup, setShowPopup] = useState(false);
   const [farmDetailsAdded, setfarmDetailsAdded] = useState(false);
   const [isEditable, setIsEditable] = useState(!isViewMode);
@@ -119,7 +120,30 @@ export default function AddFarmerLand({navigation, route}) {
     } else if (currentMonth >= 7 && currentMonth <= 11) {
       collectionCycle = 'December' + '-' + currentYear;
     }
-    setCollectionCycle(collectionCycle);
+  }, []);
+
+  useEffect(() => {
+    const fetchFarmerLands = () => {
+      // get list of farmer lands
+      Axios.get(`/refCollectionCycle`)
+        .then(function (response) {
+          // check if response is 200
+          if (response.status !== 200) {
+            alert('Error fetching farmer lands');
+            return;
+          }
+          //  console.log(response.data, 'resssssssssssssssssss');
+
+          setCollectionCycle(response?.data?.collectionCycle);
+        })
+        .catch(function (error) {
+          console.log(error);
+          //  console.log(error.response);
+          alert('Error fetching farmer lands');
+        });
+    };
+
+    fetchFarmerLands();
   }, []);
 
   useEffect(() => {
@@ -574,6 +598,40 @@ export default function AddFarmerLand({navigation, route}) {
     {label: 'OWNED', value: 'Owned'},
     {label: 'LEASED', value: 'Leased'},
   ];
+
+  const requestData = {
+    farmerLandId: landDetails?.id,
+    collectionCycle: collectionCycle,
+    orgUnitId: landDetails?.orgId,
+    tenantId: landDetails?.tenantId,
+  };
+
+  const saveData = () => {
+    // Check if user have Permission for this action
+
+    console.log(requestData);
+
+    try {
+      Axios.post(
+        `${baseURL}/farmerLandApplicableCollectionCycle`,
+        requestData,
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        },
+      )
+        .then(res => {
+          console.log(res, 'adeeddddddddddddddddddddddddddddddddd');
+        })
+        .catch(err => {
+          console.log(err), 'errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr';
+          alert('Error while saving data');
+        });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
   return (
     <View
       style={{
@@ -629,69 +687,73 @@ export default function AddFarmerLand({navigation, route}) {
           }}>
           <View
             style={{
-              flexDirection: 'row',
-
-              backgroundColor: '#fff',
-              padding: 10,
-              borderRadius: 5,
+              flexDirection: 'column',
             }}>
-            <Image
-              source={{uri: imageUri}}
+            <View
               style={{
-                width: 100,
-                height: 100,
-                marginHorizontal: 10,
-                borderRadius: 2,
-              }}
-            />
+                flexDirection: 'row',
 
-            <View style={{width: '100%'}}>
+                backgroundColor: '#fff',
+                padding: 10,
+                borderRadius: 5,
+              }}>
               <View
                 style={{
-                  flexDirection: 'column',
-                  alignContent: 'center',
-                  marginTop: 10,
-                  width: '70%',
-                  paddingHorizontal: 10,
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                 }}>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
+                    flexDirection: 'column',
+                    alignContent: 'center',
+                    marginTop: 10,
+                    width: '55%',
+                    paddingHorizontal: 10,
                   }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: '#B21B1D',
+                      }}>
+                      {farmerName}
+                    </Text>
+                    {landDetails.catchmentName === 'Tora' ? (
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          width: '20%',
+                        }}>
+                        <Image
+                          style={{height: 20, width: 20}}
+                          source={Verified}
+                        />
+                      </View>
+                    ) : (
+                      <View style={{alignItems: 'center', width: '20%'}}>
+                        <Image
+                          style={{height: 20, width: 20}}
+                          source={UnVerified}
+                        />
+                      </View>
+                    )}
+                  </View>
                   <Text
                     style={{
-                      fontSize: 25,
+                      paddingTop: 10,
+                      fontSize: 16,
                       fontWeight: 'bold',
-                      color: '#B21B1D',
+                      color: '#000000',
                     }}>
-                    {farmerName}
+                    UID: {farmerId}
                   </Text>
-                  {landDetails.catchmentName === 'Tora' ? (
-                    <View style={{alignItems: 'center', width: '20%'}}>
-                      <Image
-                        style={{height: 22, width: 22}}
-                        source={Verified}
-                      />
-                    </View>
-                  ) : (
-                    <View style={{alignItems: 'center', width: '20%'}}>
-                      <Image
-                        style={{height: 20, width: 20}}
-                        source={UnVerified}
-                      />
-                    </View>
-                  )}
                 </View>
-                <Text
-                  style={{
-                    paddingTop: 10,
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: '#000000',
-                  }}>
-                  UID: {farmerId}
-                </Text>
               </View>
             </View>
           </View>
@@ -1069,6 +1131,7 @@ export default function AddFarmerLand({navigation, route}) {
               justifyContent: 'space-between',
             }}>
             <Pressable
+              onPress={() => saveData()}
               style={{
                 flexDirection: 'column',
                 alignContent: 'center',

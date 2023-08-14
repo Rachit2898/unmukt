@@ -32,6 +32,7 @@ import Cancel from '../assets/cancel.png';
 import Ok from '../assets/ok.png';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
+import baseURL from '../Config';
 
 const BoldTextInput = ({
   label,
@@ -60,6 +61,8 @@ const VerifyForCyclePage = ({route}) => {
   const navigation = useNavigation();
   const {farmerData, refreshFarmerList} = route.params;
   const farmerDetail = route.params.farmerDetails;
+
+  const [collectionCycle, setCollectionCycle] = useState('');
 
   const [addressCords, setAddressCords] = useState([
     {
@@ -217,47 +220,20 @@ const VerifyForCyclePage = ({route}) => {
     // return
 
     // return
-    Axios.get(`/images/${farmerDetails.imageDetails.id}`)
-      .then(async function (response) {
-        // check if response is 200
-        if (response.status !== 200) {
-          alert('Error fetching image');
-          return;
-        }
-        const objectURL = `data:image/png;base64,${response.data.image}`;
-        setImageUri(objectURL);
-      })
-      .catch(function (error) {
-        alert('Error fetching image');
-      });
+    // Axios.get(`/images/${farmerDetails.imageDetails.id}`)
+    //   .then(async function (response) {
+    //     // check if response is 200
+    //     if (response.status !== 200) {
+    //       alert('Error fetching image');
+    //       return;
+    //     }
+    //     const objectURL = `data:image/png;base64,${response.data.image}`;
+    //     setImageUri(objectURL);
+    //   })
+    //   .catch(function (error) {
+    //     alert('Error fetching image');
+    //   });
   }, []);
-
-  const selectFile = async () => {
-    //Opening Document Picker for selection of one file
-    try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.images],
-      });
-      //Printing the log realted to the file
-      // console.log('res : ' + JSON.stringify(res));
-      // console.log('URI : ' + res[0].uri);
-      // console.log('Type : ' + res[0].type);
-      // console.log('File Name : ' + res[0].name);
-      // console.log('File Size : ' + res[0].size);
-      //Setting the state to show single file attributes
-      setImageUri(res[0].uri);
-    } catch (err) {
-      //Handling any exception (If any)
-      if (DocumentPicker.isCancel(err)) {
-        //If user canceled the document selection
-        alert('Canceled from single doc picker');
-      } else {
-        //For Unknown Error
-        alert('Unknown Error: ' + JSON.stringify(err));
-        throw err;
-      }
-    }
-  };
 
   const updateData = () => {
     // Check if user have Permission for this action
@@ -308,7 +284,61 @@ const VerifyForCyclePage = ({route}) => {
     {label: 'No', value: 'No'},
   ];
 
+  const requestData = {
+    farmerId: farmerData?.id,
+    collectionCycle: collectionCycle,
+    orgUnitId: farmerData?.orgId,
+    tenantId: farmerData?.tenantId,
+  };
+
+  const saveData = () => {
+    // Check if user have Permission for this action
+
+    console.log(requestData);
+
+    try {
+      Axios.post(`${baseURL}/farmerApplicableCollectionCycle`, requestData, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      })
+        .then(res => {
+          console.log(res, 'adeeddddddddddddddddddddddddddddddddd');
+        })
+        .catch(err => {
+          console.log(err), 'errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr';
+          alert('Error while saving data');
+        });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    const fetchFarmerLands = () => {
+      // get list of farmer lands
+      Axios.get(`/refCollectionCycle`)
+        .then(function (response) {
+          // check if response is 200
+          if (response.status !== 200) {
+            alert('Error fetching farmer lands');
+            return;
+          }
+          //  console.log(response.data, 'resssssssssssssssssss');
+
+          setCollectionCycle(response?.data?.collectionCycle);
+        })
+        .catch(function (error) {
+          console.log(error);
+          //  console.log(error.response);
+          alert('Error fetching farmer lands');
+        });
+    };
+
+    fetchFarmerLands();
+  }, []);
   return (
     <ScrollView style={{flex: 1, backgroundColor: '#ececec'}}>
       <View style={{marginHorizontal: 10, marginTop: 10}}>
@@ -319,7 +349,7 @@ const VerifyForCyclePage = ({route}) => {
             padding: 10,
             borderRadius: 5,
           }}>
-          <Image
+          {/* <Image
             source={{uri: imageUri}}
             style={{
               width: 100,
@@ -327,7 +357,7 @@ const VerifyForCyclePage = ({route}) => {
               marginHorizontal: 10,
               borderRadius: 2,
             }}
-          />
+          /> */}
 
           <View style={{width: '100%'}}>
             <View
@@ -954,6 +984,7 @@ const VerifyForCyclePage = ({route}) => {
             justifyContent: 'space-between',
           }}>
           <Pressable
+            onPress={() => saveData()}
             style={{
               flexDirection: 'column',
               alignContent: 'center',

@@ -114,7 +114,7 @@ export default function Farmers({navigation}) {
           return;
         }
         setFarmerList(state => [...state, ...response.data]);
-        console.log(response, console.log(index));
+        console.log('sdc cbvdsgcvcefvdf', response);
         setRefreshing(false);
       })
       .catch(function (error) {
